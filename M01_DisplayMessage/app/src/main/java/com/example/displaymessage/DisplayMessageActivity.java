@@ -23,10 +23,25 @@ public class DisplayMessageActivity extends AppCompatActivity {
         // Create the text view
         TextView textView = new TextView(this);
         textView.setTextSize(40);
-        textView.setText(message);
+        textView.setText(getString(R.string.cool_new_message));
+
 
         // Set the text view as the activity layout
         setContentView(textView);
+// Below are the colors defined in Color.class
+//
+// public static final int BLACK = -16777216;
+// public static final int BLUE = -16776961;
+// public static final int CYAN = -16711681;
+// public static final int DKGRAY = -12303292;
+// public static final int GRAY = -7829368;
+// public static final int GREEN = -16711936;
+// public static final int LTGRAY = -3355444;
+// public static final int MAGENTA = -65281;
+// public static final int RED = -65536;
+// public static final int TRANSPARENT = 0;
+// public static final int WHITE = -1;
+// public static final int YELLOW = -256;
 
         // Set color of container
         switch (message) {
@@ -38,6 +53,12 @@ public class DisplayMessageActivity extends AppCompatActivity {
                 break;
             case "blue":
                 textView.setBackgroundColor(Color.BLUE);
+                break;
+            case "cyan":
+                textView.setBackgroundColor(Color.CYAN);
+                break;
+            case "magenta":
+                textView.setBackgroundColor(Color.MAGENTA);
                 break;
             default: // Color not found...just use dark gray
                 textView.setBackgroundColor(Color.DKGRAY);
@@ -57,7 +78,8 @@ public class DisplayMessageActivity extends AppCompatActivity {
         Log.v("SimpleUserInterface", " getText.length =>" + textView.getText().length());
 
         try {
-            Thread.sleep(20);
+            Log.i("sleepy", "Sleep is here");
+            Thread.sleep(1004);
         } catch (java.lang.InterruptedException e) {
             Log.v("SimpleUserInterface", "java.lang.InterruptedException: " + e.getMessage());
         }
