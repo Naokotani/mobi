@@ -1,12 +1,9 @@
 <resources>
     <string name="app_name">Simple User Interface</string>
-
     <string name="action_settings">Settings</string>
-
     <string name="edit_message">Enter a message to Chris</string>
     <string name="button_send">Chrisy</string>
     <string name="title_activity_display_message">Russ Message</string>
-
     <string name="hello_world">Hello world!</string>
-    <string name="cool_new_message" id="3">This is the coolest message ever Chris</string>
+    <string name="cool_new_message">This is the coolest message ever Chris</string>
 </resources>
