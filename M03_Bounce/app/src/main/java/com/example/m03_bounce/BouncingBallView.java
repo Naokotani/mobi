@@ -15,8 +15,8 @@ import java.util.Random;
  */
 public class BouncingBallView extends View {
 
-    private ArrayList<Ball> balls = new ArrayList<Ball>(); // list of Balls
-    private Ball ball_1;  // use this to reference first ball in arraylist
+    private ArrayList<Shape>shapes = new ArrayList<Shape>(); // list of Balls
+    private Shape shape_1;  // use this to reference first ball in arraylist
     private Box box;
 
     // For touch inputs - previous touch (x, y)
@@ -29,15 +29,15 @@ public class BouncingBallView extends View {
         Log.v("BouncingBallView", "Constructor BouncingBallView");
 
         // create the box
-        box = new Box(Color.BLACK);  // ARGB
+        box = new Box(Color.MAGENTA);  // ARGB
 
-        //ball_1 = new Ball(Color.GREEN);
-        balls.add(new Ball(Color.GREEN));
-        ball_1 = balls.get(0);  // points ball_1 to the first; (zero-ith) element of list
+        shape_1 = new Ball(Color.GREEN);
+        shapes.add(new Ball(Color.GREEN));
+        shape_1 = shapes.get(0);  // points ball_1 to the first; (zero-ith) element of list
         Log.w("BouncingBallLog", "Just added a bouncing ball");
 
         //ball_2 = new Ball(Color.CYAN);
-        balls.add(new Ball(Color.CYAN));
+        shapes.add(new Ball(Color.CYAN));
         Log.w("BouncingBallLog", "Just added another bouncing ball");
 
         // To enable keypad
@@ -58,10 +58,18 @@ public class BouncingBallView extends View {
         //canvas.drawARGB(0,25,25,25);
         //canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
-        for (Ball b : balls) {
-            b.draw(canvas);  //draw each ball in the list
-            b.moveWithCollisionDetection(box);  // Update the position of the ball
+        for (Shape s : shapes) {
+            if(s instanceof  Rectangle) {
+               Rectangle r = (Rectangle) s;
+               r.draw(canvas);
+            } else {
+                Ball b = (Ball) s;
+                b.draw(canvas);
+            }
+
+            s.moveWithCollisionDetection(box);  // Update the position of the ball
         }
+
 
         // Delay on UI thread causes big problems!
         // Simulates doing busy work or waits on UI (DB connections, Network I/O, ....)
@@ -92,35 +100,50 @@ public class BouncingBallView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         float currentX = event.getX();
         float currentY = event.getY();
-        float deltaX, deltaY;
+        float deltaX, deltaY, totalSpeed;
         float scalingFactor = 5.0f / ((box.xMax > box.yMax) ? box.yMax : box.xMax);
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                // Modify rotational angles according to movement
-                deltaX = currentX - previousX;
-                deltaY = currentY - previousY;
-                ball_1.speedX += deltaX * scalingFactor;
-                ball_1.speedY += deltaY * scalingFactor;
-                //Log.w("BouncingBallLog", " Xspeed=" + ball_1.speedX + " Yspeed=" + ball_1.speedY);
-                Log.w("BouncingBallLog", "x,y= " + previousX + " ," + previousY + "  Xdiff=" + deltaX + " Ydiff=" + deltaY);
-                balls.add(new Ball(Color.BLUE, previousX, previousY, deltaX, deltaY));  // add ball at every touch event
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {// Modify rotational angles according to movement
+            deltaX = currentX - previousX;
+            deltaY = currentY - previousY;
+            shape_1.speedX += deltaX * scalingFactor;
+            shape_1.speedY += deltaY * scalingFactor;
 
-                // A way to clear list when too many balls
-                if (balls.size() > 20) {
-                    // leave first ball, remove the rest
-                    Log.v("BouncingBallLog", "too many balls, clear back to 1");
-                    balls.clear();
-                    balls.add(new Ball(Color.RED));
-                    ball_1 = balls.get(0);  // points ball_1 to the first (zero-ith) element of list
-                }
+            if(deltaX >= 0) {
+                totalSpeed = deltaX;
+            } else {
+                totalSpeed = deltaX - (deltaX * 2);
+            }
 
+            if(deltaY >= 0) {
+                totalSpeed = deltaY;
+            } else {
+                totalSpeed = deltaY - (deltaY * 2);
+            }
+
+            Log.w("BouncingBallLog", " Xspeed=" + shape_1.speedX + " Yspeed=" + shape_1.speedY);
+            Log.w("BouncingBallLog", "x,y= " + previousX + " ," + previousY + "  Xdiff=" + deltaX + " Ydiff=" + deltaY);
+
+            if(totalSpeed > 50) {
+                shapes.add(new Ball(new RandomColor().getColor(), previousX, previousY, deltaX, deltaY));  // add ball at every touch event
+            } else {
+                shapes.add(new Rectangle(new RandomColor().getColor(), previousX, previousY, deltaX, deltaY));  // add ball at every touch event
+            }
+
+            // A way to clear list when too many balls
+            if (shapes.size() > 20) {
+                // leave first ball, remove the rest
+                Log.v("BouncingBallLog", "too many balls, clear back to 1");
+                shapes.clear();
+                shapes.add(new Ball(Color.RED));
+                shape_1 = shapes.get(0);  // points ball_1 to the first (zero-ith) element of list
+            }
         }
         // Save current x, y
         previousX = currentX;
         previousY = currentY;
 
         // Try this (remove other invalidate(); )
-        //this.invalidate();
+//        this.invalidate();
 
         return true;  // Event handled
     }
@@ -140,6 +163,6 @@ public class BouncingBallView extends View {
         int dx = rand.nextInt(50);
         int dy = rand.nextInt(20);
 
-        balls.add(new Ball(Color.RED, x, y, dx, dy));  // add ball at every touch event
+        shapes.add(new Ball(Color.RED, x, y, dx, dy));  // add ball at every touch event
     }
 }
