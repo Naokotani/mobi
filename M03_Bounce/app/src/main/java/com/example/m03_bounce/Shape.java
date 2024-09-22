@@ -98,12 +98,13 @@ public class Shape {
                 if (i instanceof Rectangle) {
                     if (minY < i.maxY && x < i.maxX && x > i.minX && y > i.minY) {
                         if(speedMagnitude(speedX) < speedMagnitude(i.speedX)) {
-                            speedY = -i.speedY;
-                            speedX = -i.speedX;
+                            speedY = i.speedY;
+                            speedX = i.speedX;
+                            speedX *= 1.10f;
                         } else {
                             speedX = -speedX;
+                            speedX *= 1.05f;
                         }
-                        speedX *= 1.10f;
 
                         if(((Rectangle) i).player) {
                             return Impact.HIT_PLAYER;
@@ -112,12 +113,13 @@ public class Shape {
                         }
                     } else if (maxY > i.minY && x < i.maxX && x > i.minX && y < i.maxY) {
                         if(speedMagnitude(speedX) < speedMagnitude(i.speedX)) {
-                            speedX = -i.speedX;
-                            speedY = -i.speedY;
+                            speedX = i.speedX;
+                            speedY = i.speedY;
+                            speedX *= 1.10f;
                         } else {
                             speedX = -speedX;
+                            speedX *= 1.05f;
                         }
-                        speedX *= 1.10f;
                         if(((Rectangle) i).player) {
                             return Impact.HIT_PLAYER;
                         } else {
@@ -125,13 +127,13 @@ public class Shape {
                         }
                     } else if (minX < i.maxX && y < i.maxY && y > i.minY && y > i.minX) {
                         if(speedMagnitude(speedY) < speedMagnitude(i.speedY)) {
-                            speedY = -i.speedY;
-                            speedX = -i.speedX;
-
+                            speedY = i.speedY;
+                            speedX = i.speedX;
+                            speedY *= 1.10f;
                         } else {
                             speedY = -speedY;
+                            speedY *= 1.05f;
                         }
-                        speedY *= 1.10f;
 
                         if(((Rectangle) i).player) {
                             return Impact.HIT_PLAYER;
@@ -140,12 +142,13 @@ public class Shape {
                         }
                     } else if (maxX > i.minX && y < i.maxY && y > i.minY && y > i.minX) {
                         if(speedMagnitude(speedY) < speedMagnitude(i.speedY)) {
-                            speedY = -i.speedY;
-                            speedX = -i.speedX;
+                            speedY = i.speedY;
+                            speedX = i.speedX;
+                            speedY *= 1.10f;
                         } else {
                             speedY = -speedY;
+                            speedY *= 1.05f;
                         }
-                        speedY *= 1.10f;
 
                         if(((Rectangle) i).player) {
                             return Impact.HIT_PLAYER;

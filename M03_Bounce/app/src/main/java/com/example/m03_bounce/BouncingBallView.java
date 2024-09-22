@@ -35,7 +35,7 @@ public class BouncingBallView extends View {
         Log.v("BouncingBallView", "Constructor BouncingBallView");
 
         // create the box
-        box = new Box(Color.MAGENTA);  // ARGB
+        box = new Box(Color.LTGRAY);  // ARGB
 
         scorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scorePaint.setColor(Color.BLACK);
@@ -185,8 +185,8 @@ public class BouncingBallView extends View {
         // make random x,y, velocity
         int x = rand.nextInt(viewWidth);
         int y = rand.nextInt(viewHeight);
-        int dx = rand.nextInt(20) + 10;
-        int dy = rand.nextInt(10) + 10;
+        int dx = rand.nextInt(10) + 5;
+        int dy = rand.nextInt(5) + 5;
 
         Rectangle[] recs = {
                 new Rectangle(Color.RED, x, y, -dx, -dy, true),

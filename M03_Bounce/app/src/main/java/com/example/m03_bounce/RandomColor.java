@@ -7,7 +7,7 @@ public class RandomColor {
     private int color;
 
     public RandomColor() {
-        int color = (int) Math.round(Math.random() * 10);
+        int color = (int) Math.round(Math.random() * 9);
         switch(color) {
             case 0:
                 this.color = Color.BLUE;
@@ -25,21 +25,18 @@ public class RandomColor {
                 this.color = Color.GREEN;
                 break;
             case 5:
-                this.color = Color.LTGRAY;
-                break;
-            case 6:
                 this.color = Color.MAGENTA;
                 break;
-            case 7:
+            case 6:
                 this.color = Color.RED;
                 break;
-            case 8:
+            case 7:
                 this.color = Color.TRANSPARENT;
                 break;
-            case 9:
+            case 8:
                 this.color = Color.WHITE;
                 break;
-            case 10:
+            case 9:
                 this.color = Color.YELLOW;
                 break;
             default:
