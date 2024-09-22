@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 // Found tutorial to do put buttons over view here:
 // https://code.tutsplus.com/tutorials/android-sdk-creating-custom-views--mobile-14548

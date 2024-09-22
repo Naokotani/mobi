@@ -17,12 +17,12 @@ import java.util.Random;
  * Created by Russ on 08/04/2014.
  */
 public class BouncingBallView extends View {
-    private ArrayList<Shape>shapes = new ArrayList<Shape>(); // list of Balls
+    private final ArrayList<Shape>shapes = new ArrayList<Shape>(); // list of Balls
     private Shape shape_1;  // use this to reference first ball in arraylist
-    private Box box;
+    private final Box box;
     private int player_score;
     private int enemy_score;
-    private Paint scorePaint;
+    private final Paint scorePaint;
 
     // For touch inputs - previous touch (x, y)
     private float previousX;
@@ -129,7 +129,7 @@ public class BouncingBallView extends View {
         float currentX = event.getX();
         float currentY = event.getY();
         float deltaX, deltaY, totalSpeed;
-        float scalingFactor = 5.0f / ((box.xMax > box.yMax) ? box.yMax : box.xMax);
+        float scalingFactor = 5.0f / (Math.min(box.xMax, box.yMax));
         if (event.getAction() == MotionEvent.ACTION_MOVE) {// Modify rotational angles according to movement
             deltaX = currentX - previousX;
             deltaY = currentY - previousY;
@@ -176,6 +176,7 @@ public class BouncingBallView extends View {
         return true;  // Event handled
     }
 
+    Random rand = new Random();
     public void createRectangle() {
         //get half of the width and height as we are working with a circle
         int viewWidth = this.getMeasuredWidth();
@@ -199,18 +200,5 @@ public class BouncingBallView extends View {
         player_score = 0;
         enemy_score = 0;
         shapes.clear();
-    }
-
-    Random rand = new Random();
-    // called when button is pressed
-    public void buttonPressed(View v) {
-        Log.d("BouncingBallView  BUTTON", "User tapped the  button ... VIEW");
-
-        if (findViewById(R.id.button_rectangle) == findViewById(v.getId())) {
-            createRectangle();
-        } else {
-            reset();
-        }
-
     }
 }
