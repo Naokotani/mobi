@@ -17,16 +17,29 @@
         custom:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_russ"
+        android:id="@+id/button_rectangle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onRussButtonClick"
-        android:text="Russ Button"
+        android:onClick="createRectangle"
+        android:text="@string/button_rectangle"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintEnd_toEndOf="parent"
-        custom:layout_constraintHorizontal_bias="0.1"
+        custom:layout_constraintHorizontal_bias="0.945"
         custom:layout_constraintStart_toStartOf="parent"
         custom:layout_constraintTop_toTopOf="parent"
-        custom:layout_constraintVertical_bias="0.057" />
+        custom:layout_constraintVertical_bias="0.08" />
+
+    <Button
+        android:id="@+id/button_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="reset"
+        android:text="@string/button_reset"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintHorizontal_bias="0.95"
+        custom:layout_constraintStart_toStartOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintVertical_bias="0.01" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

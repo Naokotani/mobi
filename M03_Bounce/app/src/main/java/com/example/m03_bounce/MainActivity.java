@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 
 // Found tutorial to do put buttons over view here:
 // https://code.tutsplus.com/tutorials/android-sdk-creating-custom-views--mobile-14548
 
 public class MainActivity extends AppCompatActivity {
-
-
     // bbView is our bouncing ball view
     private BouncingBallView bbView;
 
@@ -22,17 +20,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // get the view object so we can reference it later
-        bbView = (BouncingBallView) findViewById(R.id.custView);
+        bbView = findViewById(R.id.custView);
     }
 
     // button action
 
-    public void onRussButtonClick(View v) {
+    public void reset(View v) {
 
         Log.d("MainActivity  BUTTON", "User tapped the  button ... MAIN");
 
         // let the view do something
-        bbView.RussButtonPressed();
+        bbView.reset();
 
     }
+
+    public void createRectangle(View v) {
+
+        Log.d("MainActivity  BUTTON", "User tapped the  button ... MAIN");
+
+        // let the view do something
+        bbView.createRectangle();
+
+    }
+
 }
