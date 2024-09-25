@@ -185,8 +185,11 @@ public class BouncingBallView extends View {
         // make random x,y, velocity
         int x = rand.nextInt(viewWidth);
         int y = rand.nextInt(viewHeight);
-        int dx = rand.nextInt(10) + 5;
-        int dy = rand.nextInt(5) + 5;
+//        int dx = rand.nextInt(10) + 5;
+//        int dy = rand.nextInt(5) + 5;
+
+        int dx = 3;
+        int dy = 3;
 
         Rectangle[] recs = {
                 new Rectangle(Color.RED, x, y, -dx, -dy, true),
