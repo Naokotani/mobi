@@ -11,13 +11,6 @@ public class Rectangle extends Shape implements Drawable {
     private final float width;
     public boolean player;
 
-    public void updateBounds() {
-        maxX = (int) (x + width);
-        minX = (int) (x - width);
-        maxY = (int) (y + height);
-        minY = (int) (y - height);
-    }
-
     public Rectangle(int color, float x, float y, float speedX, float speedY, boolean player) {
         super(color, x, y, speedX, speedY);
         this.height = radius;
@@ -30,4 +23,13 @@ public class Rectangle extends Shape implements Drawable {
         bounds.set(x - width, y - height, x + width, y + height);
         canvas.drawRect(bounds, paint);
     }
+
+    public void updateBounds() {
+        maxX = (int) (x + width);
+        minX = (int) (x - width);
+        maxY = (int) (y + height);
+        minY = (int) (y - height);
+    }
+
+
 }

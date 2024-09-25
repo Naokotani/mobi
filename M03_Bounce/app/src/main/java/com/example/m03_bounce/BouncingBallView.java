@@ -96,8 +96,8 @@ public class BouncingBallView extends View {
             }
                 // Update the position of the ball
         }
-        canvas.drawText("Player Score: " + player_score, 20, 200    , scorePaint);
-        canvas.drawText("Enemy Score: " + enemy_score, 20, 100    , scorePaint);
+        canvas.drawText("Player Score: " + player_score, 20, 200, scorePaint);
+        canvas.drawText("Enemy Score: " + enemy_score, 20, 100, scorePaint);
 
         // Delay on UI thread causes big problems!
         // Simulates doing busy work or waits on UI (DB connections, Network I/O, ....)
@@ -143,9 +143,9 @@ public class BouncingBallView extends View {
             }
 
             if(deltaY >= 0) {
-                totalSpeed = deltaY;
+                totalSpeed += deltaY;
             } else {
-                totalSpeed = deltaY - (deltaY * 2);
+                totalSpeed += deltaY - (deltaY * 2);
             }
 
             Log.w("BouncingBallLog", " Xspeed=" + shape_1.speedX + " Yspeed=" + shape_1.speedY);
@@ -154,7 +154,7 @@ public class BouncingBallView extends View {
             if(totalSpeed > 50) {
                 shapes.add(new Ball(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch event
             } else {
-                shapes.add(new Square(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch event
+                shapes.add(new Square(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch eventa
             }
 
             // A way to clear list when too many balls

@@ -5,6 +5,7 @@ import android.graphics.RectF;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.stream.Collector;
 
 public class Shape {
 
@@ -92,6 +93,7 @@ public class Shape {
             speedY = -speedY;
             y = box.yMin + radius;
         }
+
 
         for (Shape i : shapes) {
             if (!(this instanceof Rectangle)) {
