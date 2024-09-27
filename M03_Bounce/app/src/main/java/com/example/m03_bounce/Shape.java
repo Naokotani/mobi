@@ -5,13 +5,13 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 
 public class Shape {
-
     float radius = 50;      // Ball's radius
     float x;                // Ball's center (x,y)
     float y;
@@ -38,6 +38,7 @@ public class Shape {
 
     // Constructor
     public Shape(int color) {
+
         bounds = new RectF();
         paint = new Paint();
         paint.setColor(color);
@@ -69,7 +70,7 @@ public class Shape {
         minY = (int) (y - radius);
     }
 
-    private float speedMagnitude(float speed) {
+    private float magnitude(float speed) {
         if(speed <= 0) {
             return -speed;
         } else {
@@ -77,28 +78,83 @@ public class Shape {
         }
     }
 
-    public boolean checkTopClip(Shape r) {
-        return minY < r.maxY && x < r.maxX && x > r.minX;
+    public boolean checkYClip(Shape r) {
+        if(minY < r.maxY) {
+//            y = r.maxY + radius;
+            return true;
+        }
+
+        if (maxY > r.minY) {
+//            y = r.minY + radius;
+            return true;
+        }
+        return false;
     }
 
-//        return minY < r.maxY && x < r.maxX && x > r.minX && y > r.minY;
+    public boolean checkXClip(Shape r) {
+        if(minX > r.maxX) {
+//            x = r.maxX + radius;
+            return true;
+        }
 
-    public boolean checkBotClip(Shape r) {
-        return maxY < r.minY && x < r.maxX && x > r.minX;
+        if (maxX < r.minX) {
+//            x = minX + radius;
+            return true;
+        }
+        return false;
     }
 
-//        return maxY < r.minY && x < r.maxX && x > r.minX && y > r.minY;
-
-    public boolean checkLeftClip(Shape r) {
-        return minY < r.maxY && x < r.maxX && x > r.minX;
+    private boolean checkClip(Shape r) {
+        return minX < r.maxX + radius && maxX > r.minX + radius && minY < r.maxY && maxY > r.minY;
     }
 
-//        return minY < r.maxY && x < r.maxX && x > r.minX && y > r.minY;
+    private class Direction {
+        public final String direction;
+        public final float distance;
 
-    public boolean checkRightClip(Shape r) {
-        return maxX > r.minX && y < r.maxY && y > r.minY;
+        private Direction(String direction, float distance) {
+            this.direction = direction;
+            this.distance = distance;
+        }
+
+        public float getDistance() {
+            return distance;
+        }
     }
-//        return maxX > r.minX && y < r.maxY && y > r.minY && y > r.minX;
+
+    private void checkDirection(Shape r) {
+        List<Direction> directions = new ArrayList<>();
+        directions.add(new Direction("right",  magnitude(minX - r.maxX)));
+        directions.add(new Direction("left", magnitude(maxX - r.minX)));
+        directions.add(new Direction("up", magnitude(minY - r.maxY)));
+        directions.add(new Direction("down", magnitude(maxY - r.minY)));
+
+        Direction largest  = directions.stream().max(Comparator.comparing(Direction::getDistance)).get();
+
+        switch(largest.direction) {
+            case "left":
+                Log.i("bounce", "bounce right side");
+                x = r.maxX + radius;
+                bounceX(r);
+                break;
+            case "right":
+                Log.i("bounce", "bounce left side");
+                x = r.minX - radius;
+                bounceX(r);
+                break;
+            case "up":
+                Log.i("bounce", "bounce top side");
+                y = r.minY - radius;
+                bounceY(r);
+                break;
+            case "down":
+                Log.i("bounce", "bounce bottom side");
+                y = r.maxY + radius;
+                bounceY(r);
+        }
+    }
+
+
     public Impact moveWithCollisionDetection(Box box, ArrayList<Shape> shapes) {
         // Get new (x,y) position
         x += speedX;
@@ -127,51 +183,26 @@ public class Shape {
         impact = Impact.MISS;
 
         List<Shape> rectangles = shapes.stream().filter(s -> (s instanceof Rectangle)).collect(Collectors.toList());
-        rectangles.stream().filter(this::checkTopClip).findFirst().or(() ->
-                rectangles.stream().filter(this::checkBotClip).findFirst()
-        ).stream().findFirst().ifPresent(this::bounceVertical);
-
-        rectangles.stream().filter(this::checkLeftClip).findFirst().or(() ->
-                rectangles.stream().filter(this::checkRightClip).findFirst()
-        ).stream().findFirst().ifPresent(this::bounceHorizontal);
+        rectangles.stream().filter(this::checkClip).findFirst().ifPresent(this::checkDirection);
 
         return impact;
 }
 
-    private void bounceVertical(Shape s) {
+    private void bounceY(Shape s) {
         Rectangle r = (Rectangle) s;
-
-        if(speedMagnitude(speedY) < speedMagnitude(r.speedY)) {
-            if(r.speedY >= 0) {
-                y = r.minY + radius + r.speedY;
-            } else {
-                y = r.maxY + radius + (-r.speedY);
-            }
-            speedY = r.speedY;
-            speedX *= 1.10f;
-        } else {
-            speedY = -speedY;
-            speedX *= 1.05f;
-        }
+        float magnitutde = (magnitude(r.speedY) > magnitude(speedY))
+                ? magnitude(r.speedY) - magnitude(speedY):
+                magnitude(speedY) - magnitude(r.speedY);
+            speedY = -speedY * 1.10f;
         setImpact(r);
-
     }
 
-    private void bounceHorizontal(Shape s) {
+    private void bounceX(Shape s) {
         Rectangle r = (Rectangle) s;
-
-        if(speedMagnitude(speedX) < speedMagnitude(r.speedX)) {
-            if(r.speedX >= 0) {
-                y = r.maxY + radius + (-r.speedX);
-            } else {
-                y = r.minY + radius + r.speedX;
-            }
-            speedY = r.speedY;
-            speedY *= 1.10f;
-        } else {
-            speedX = -speedX;
-            speedX *= 1.05f;
-        }
+        float magnitutde = (magnitude(r.speedX) > magnitude(speedX))
+                ? magnitude(r.speedX) - magnitude(speedX):
+                magnitude(speedX) - magnitude(r.speedX);
+        speedX = -speedX * 1.10f;
         setImpact(r);
     }
 
