@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 /**
  * Created by Russ on 08/04/2014.
  */
-public class Square extends Shape implements Drawable {
+public class Square extends Shape {
     public Square(int color, float x, float y, float speedX, float speedY) {
         super(color, x, y, speedX, speedY);
     }

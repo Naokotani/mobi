@@ -1,5 +1,6 @@
 package com.example.m03_bounce;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,8 +18,7 @@ import java.util.Random;
  * Created by Russ on 08/04/2014.
  */
 public class BouncingBallView extends View {
-    private final ArrayList<Shape>shapes = new ArrayList<Shape>(); // list of Balls
-    private Shape shape_1;  // use this to reference first ball in arraylist
+    private final ArrayList<Shape>shapes = new ArrayList<>(); // list of Balls
     private final Box box;
     private int player_score;
     private int enemy_score;
@@ -44,14 +44,8 @@ public class BouncingBallView extends View {
         player_score = 0;
         enemy_score = 0;
 
-        shape_1 = new Ball(Color.GREEN);
         shapes.add(new Ball(Color.GREEN));
-        shape_1 = shapes.get(0);  // points ball_1 to the first; (zero-ith) element of list
-        Log.w("BouncingBallLog", "Just added a bouncing ball");
-
-        //ball_2 = new Ball(Color.CYAN);
         shapes.add(new Ball(Color.CYAN));
-        Log.w("BouncingBallLog", "Just added another bouncing ball");
 
         // To enable keypad
         this.setFocusable(true);
@@ -67,10 +61,7 @@ public class BouncingBallView extends View {
 
         // Draw the components
         box.draw(canvas);
-        //canvas.drawARGB(0,25,25,25);
-        //canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        shapes.removeIf(s -> s.speedX > 100 || s.speedX < -100);
-        shapes.removeIf(s -> s.speedY > 100 || s.speedY < -100);
+        shapes.removeIf(Shape::isTooFast);
 
         for (Shape s : shapes) {
             if(s instanceof  Square) {
@@ -99,19 +90,6 @@ public class BouncingBallView extends View {
         canvas.drawText("Player Score: " + player_score, 20, 200, scorePaint);
         canvas.drawText("Enemy Score: " + enemy_score, 20, 100, scorePaint);
 
-        // Delay on UI thread causes big problems!
-        // Simulates doing busy work or waits on UI (DB connections, Network I/O, ....)
-        //  I/Choreographer? Skipped 64 frames!  The application may be doing too much work on its main thread.
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//        }
-
-        // Check what happens if you draw the box last
-        //box.draw(canvas);
-
-        // Check what happens if you don't call invalidate (redraw only when stopped-started)
-        // Force a re-draw
         this.invalidate();
     }
 
@@ -124,17 +102,15 @@ public class BouncingBallView extends View {
     }
 
     // Touch-input handler
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float currentX = event.getX();
         float currentY = event.getY();
         float deltaX, deltaY, totalSpeed;
-        float scalingFactor = 5.0f / (Math.min(box.xMax, box.yMax));
         if (event.getAction() == MotionEvent.ACTION_MOVE) {// Modify rotational angles according to movement
             deltaX = currentX - previousX;
             deltaY = currentY - previousY;
-            shape_1.speedX += deltaX * scalingFactor;
-            shape_1.speedY += deltaY * scalingFactor;
 
             if(deltaX >= 0) {
                 totalSpeed = deltaX;
@@ -148,9 +124,6 @@ public class BouncingBallView extends View {
                 totalSpeed += deltaY - (deltaY * 2);
             }
 
-            Log.w("BouncingBallLog", " Xspeed=" + shape_1.speedX + " Yspeed=" + shape_1.speedY);
-            Log.w("BouncingBallLog", "x,y= " + previousX + " ," + previousY + "  Xdiff=" + deltaX + " Ydiff=" + deltaY);
-
             if(totalSpeed > 50) {
                 shapes.add(new Ball(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch event
             } else {
@@ -162,8 +135,7 @@ public class BouncingBallView extends View {
                 // leave first ball, remove the rest
                 Log.v("BouncingBallLog", "too many balls, clear back to 1");
                 shapes.clear();
-                shapes.add(new Ball(Color.RED));
-                shape_1 = shapes.get(0);  // points ball_1 to the first (zero-ith) element of list
+                shapes.add(new Ball(new RandomColor().getColor()));
             }
         }
         // Save current x, y
@@ -185,11 +157,8 @@ public class BouncingBallView extends View {
         // make random x,y, velocity
         int x = rand.nextInt(viewWidth);
         int y = rand.nextInt(viewHeight);
-//        int dx = rand.nextInt(10) + 5;
-//        int dy = rand.nextInt(5) + 5;
-
-        int dx = 3;
-        int dy = 3;
+        int dx = rand.nextInt(7) + 3;
+        int dy = rand.nextInt(3) + 2;
 
         Rectangle[] recs = {
                 new Rectangle(Color.RED, x, y, -dx, -dy, true),

@@ -1,12 +1,8 @@
 package com.example.m03_bounce;
-
 import android.graphics.Canvas;
+import java.util.ArrayList;
 
-
-/**
- * Created by Russ on 08/04/2014.
- */
-public class Rectangle extends Shape implements Drawable {
+public class Rectangle extends Shape {
     private final float height;
     private final float width;
     public boolean player;
@@ -22,6 +18,14 @@ public class Rectangle extends Shape implements Drawable {
         super.
         bounds.set(x - width, y - height, x + width, y + height);
         canvas.drawRect(bounds, paint);
+    }
+
+    @Override
+    public Impact moveWithCollisionDetection(Box box, ArrayList<Shape> shapes) {
+        move();
+        wallBounce(box);
+
+        return Impact.MISS;
     }
 
     public void updateBounds() {
