@@ -97,13 +97,6 @@ public abstract class Collider extends Shape {
 
         Log.i("corner", String.valueOf(multiDirection.size()));
 
-//        if(multiDirection.size() > 2) {
-//            Log.i("corner", "Corner bounce");
-//            bounceX(r);
-//            bounceY(r);
-//            return;
-//        }
-
         Direction smallest  = directions.stream()
                 .min(Comparator.comparing(Direction::getDistance)).orElse(null);
 
