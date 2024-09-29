@@ -6,7 +6,9 @@ import android.graphics.Canvas;
 /**
  * Created by Russ on 08/04/2014.
  */
-public class Square extends Shape {
+public class Square extends Collider {
+    private static final int radius = 50;
+
     public Square(int color, float x, float y, float speedX, float speedY) {
         super(color, x, y, speedX, speedY);
     }

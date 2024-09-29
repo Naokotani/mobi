@@ -12,17 +12,20 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by Russ on 08/04/2014.
  */
 public class BouncingBallView extends View {
-    private final ArrayList<Shape>shapes = new ArrayList<>(); // list of Balls
+    private final ArrayList<Collider>colliders = new ArrayList<>(); // list of Balls
     private final Box box;
     private int player_score;
     private int enemy_score;
     private final Paint scorePaint;
+    private final List<Explosion> explosions;
 
     // For touch inputs - previous touch (x, y)
     private float previousX;
@@ -44,49 +47,57 @@ public class BouncingBallView extends View {
         player_score = 0;
         enemy_score = 0;
 
-        shapes.add(new Ball(Color.GREEN));
-        shapes.add(new Ball(Color.CYAN));
+        colliders.add(new Ball(Color.GREEN));
+        colliders.add(new Ball(Color.CYAN));
 
         // To enable keypad
         this.setFocusable(true);
         this.requestFocus();
         // To enable touch mode
         this.setFocusableInTouchMode(true);
+        this.explosions = new ArrayList<>();
+    }
+
+    private void incrementScore(Impact impact) {
+        if(impact == Impact.HIT_PLAYER){
+            player_score++;
+        } else if(impact == Impact.HIT_ENEMY &&
+                enemy_score >= 0) {
+            enemy_score++;
+        }
     }
 
     // Called back to draw the view. Also called after invalidate().
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         Log.v("BouncingBallView", "onDraw");
 
         // Draw the components
         box.draw(canvas);
-        shapes.removeIf(Shape::isTooFast);
 
-        for (Shape s : shapes) {
-            if(s instanceof  Square) {
-                s.updateBounds();
-               Square r = (Square) s;
-               r.draw(canvas);
-            } else if(s instanceof Ball) {
-                s.updateBounds();
-                Ball b = (Ball) s;
-                b.draw(canvas);
-            } else {
-                Rectangle r = (Rectangle) s;
-                r.updateBounds();
-                r.draw(canvas);
-            }
-            Impact impact = s.moveWithCollisionDetection(box, shapes);
+        List<Collider> explodeable = colliders.stream().filter(Collider::isTooFast).collect(Collectors.toList());
 
-            if(impact == Impact.HIT_PLAYER){
-                player_score++;
-            } else if(impact == Impact.HIT_ENEMY &&
-            enemy_score >= 0) {
-                enemy_score++;
+        if(!explodeable.isEmpty()) {
+            for(Collider e: explodeable)  {
+                explosions.add(new Explosion(e.x, e.y, e.paint.getColor()));
             }
-                // Update the position of the ball
         }
+
+        colliders.removeIf(Collider::isTooFast);
+
+        for (Explosion e :explosions) {
+            e.move();
+            e.draw(canvas);
+        }
+
+        colliders.stream().map(Collider::updateBounds)
+                .map(s -> s.moveWithCollisionDetection(box, colliders))
+                .forEach(this::incrementScore);
+
+        colliders.forEach(s -> s.draw(canvas));
+
+        // Update the position of the ball
         canvas.drawText("Player Score: " + player_score, 20, 200, scorePaint);
         canvas.drawText("Enemy Score: " + enemy_score, 20, 100, scorePaint);
 
@@ -125,27 +136,32 @@ public class BouncingBallView extends View {
             }
 
             if(totalSpeed > 50) {
-                shapes.add(new Ball(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch event
+                colliders.add(new Ball
+                        (new RandomColor().getColor( ),
+                                previousX, previousY,
+                                deltaX / 50,
+                                deltaY / 50));
             } else {
-                shapes.add(new Square(new RandomColor().getColor(), previousX, previousY, deltaX / 100, deltaY / 100));  // add ball at every touch eventa
+                colliders.add(new Square
+                        (new RandomColor().getColor(),
+                                previousX, previousY,
+                                deltaX / 75, deltaY / 75));
             }
 
             // A way to clear list when too many balls
-            if (shapes.size() > 20) {
+            if (colliders.size() > 20) {
                 // leave first ball, remove the rest
                 Log.v("BouncingBallLog", "too many balls, clear back to 1");
-                shapes.clear();
-                shapes.add(new Ball(new RandomColor().getColor()));
+                colliders.clear();
+                colliders.add(new Ball(new RandomColor().getColor()));
             }
         }
         // Save current x, y
         previousX = currentX;
         previousY = currentY;
 
-        // Try this (remove other invalidate(); )
-//        this.invalidate();
 
-        return true;  // Event handled
+        return true;
     }
 
     Random rand = new Random();
@@ -165,12 +181,12 @@ public class BouncingBallView extends View {
                 new Rectangle(Color.GRAY, x, y, dx, dy, false)
         };
 
-        shapes.addAll(Arrays.asList(recs));  // add ball at every touch event
+        colliders.addAll(Arrays.asList(recs));  // add ball at every touch event
     }
 
     public void reset() {
         player_score = 0;
         enemy_score = 0;
-        shapes.clear();
+        colliders.clear();
     }
 }
