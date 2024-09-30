@@ -47,7 +47,7 @@
         android:id="@+id/b_subtract"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="112dp"
+        android:layout_marginStart="104dp"
         android:layout_marginTop="168dp"
         android:text="@string/subtract"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
         android:id="@+id/b_multiply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="212dp"
+        android:layout_marginStart="208dp"
         android:layout_marginTop="168dp"
         android:text="@string/multiply"
         app:layout_constraintStart_toStartOf="parent"
@@ -207,11 +207,11 @@
         android:id="@+id/input_zero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
         android:text="@string/zero"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_eight" />
+        app:layout_constraintStart_toEndOf="@+id/b_equals"
+        app:layout_constraintTop_toBottomOf="@+id/input_seven" />
 
     <Button
         android:id="@+id/input_decimal"
@@ -222,6 +222,16 @@
         android:text="@string/decimal"
         app:layout_constraintStart_toEndOf="@+id/input_zero"
         app:layout_constraintTop_toBottomOf="@+id/input_nine" />
+
+    <Button
+        android:id="@+id/b_equals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/equals"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_seven" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

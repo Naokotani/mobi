@@ -13,7 +13,7 @@ public class Calculations {
         this.operations = new ArrayList<>();
     }
 
-    public void add(Operation operation) {
+    public Calculations add(Operation operation) {
         if(currentIndex > 0) {
             operations = clearRest(currentIndex);
         } else if(operations.size() > maxHist - 1) {
@@ -21,6 +21,7 @@ public class Calculations {
         }
 
         operations.add(0, operation);
+        return this;
     }
 
     public List<Operation> clearRest(int index) {
@@ -28,16 +29,6 @@ public class Calculations {
         Operation[] arr = new Operation[operations.size() - (index + 1)];
         return Arrays.stream(operations.toArray(arr), index, operations.size())
                 .collect(Collectors.toList());
-    }
-
-    public List<Operation> clearLast() {
-        operations.remove(0);
-        return operations;
-    }
-
-    public void allClear() {
-        operations.clear();
-        operations = new ArrayList<>();
     }
 
     public void forward() {
@@ -77,5 +68,13 @@ public class Calculations {
 
     public int size() {
         return operations.size();
+    }
+
+    public char getSeedOperator() {
+        return operations.get(0).getOperator();
+    }
+
+    public double getSeedValue() {
+        return operations.get(0).getResult();
     }
 }

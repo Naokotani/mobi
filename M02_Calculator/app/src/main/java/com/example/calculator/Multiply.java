@@ -11,7 +11,7 @@ public class Multiply extends Operation {
         if(previous_num == 0) {
             this.history = " X " + new_num;
         } else {
-            this.history = previous_num  + " X " + new_num + " = " + result;
+            this.history = previous_num  + " X " + new_num;
         }
     }
 

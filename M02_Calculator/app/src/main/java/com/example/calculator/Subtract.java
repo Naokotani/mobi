@@ -12,7 +12,7 @@ public class Subtract extends Operation {
         if(previous_num == 0) {
             this.history = " - " + new_num;
         } else {
-            this.history = previous_num  + " - " + new_num + " = " + result;
+            this.history = previous_num  + " - " + new_num;
         }
     }
 
