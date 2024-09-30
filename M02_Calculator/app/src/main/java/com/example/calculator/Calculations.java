@@ -52,11 +52,30 @@ public class Calculations {
         }
     }
 
+    public String getHistoryString() {
+        if(operations.isEmpty()) {
+            return "0";
+        }
+        return operations.get(currentIndex).getHistory();
+    }
+
+    public String resultString() {
+        if(operations.isEmpty()) {
+            return "0";
+        }
+
+        return Double.toString(operations.get(currentIndex).getResult());
+    }
+
     public double result() {
         if(operations.isEmpty()) {
             return 0;
         }
 
         return operations.get(currentIndex).getResult();
+    }
+
+    public int size() {
+        return operations.size();
     }
 }

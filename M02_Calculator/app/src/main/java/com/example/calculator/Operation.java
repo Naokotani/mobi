@@ -11,4 +11,5 @@ public abstract class Operation {
 
     abstract public double getResult();
     abstract public char getOperator();
+    abstract public String getHistory();
 }
