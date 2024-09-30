@@ -5,7 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    private static final Calculations calculations = new Calculations();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
         Button subtract = findViewById(R.id.b_subtract);
         Button divide =findViewById(R.id.b_divide);
         Button multiply = findViewById(R.id.b_multiply);
+        Button clear = findViewById(R.id.b_clear);
+        Button allClear = findViewById(R.id.b_allClear);
+        Button back = findViewById(R.id.b_back);
+        Button forward = findViewById(R.id.b_forward);
+        Calculations calculations = new Calculations();
 
         Inputs inputs = new Inputs(
                     findViewById(R.id.num_one),
@@ -23,39 +33,43 @@ public class MainActivity extends AppCompatActivity {
                     findViewById(R.id.answer));
 
         add.setOnClickListener(v -> {
-            Log.i("Button Press", "Add clicked");
-            Calculate operation = new Calculate(inputs.getInput_one(),
-                    inputs.getInput_two());
-
-            // Set the Answer into the the answer field
-            inputs.getAnswer().setText(String.format("%s", operation.add()));
+            calculations.add(new Add(calculations.result(), inputs.getInput_one()));
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
         });
 
         subtract.setOnClickListener(v -> {
-            Log.i("Button Press", "Subtract clicked");
-            Calculate operation = new Calculate(inputs.getInput_one(),
-                    inputs.getInput_two());
-
-            // Set the Answer into the the answer field
-            inputs.getAnswer().setText(String.format("%s", operation.subtract()));
+            calculations.add(new Subtract(calculations.result(), inputs.getInput_one()));
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
         });
 
         multiply.setOnClickListener(v -> {
-            Log.i("Button Press", "Multiply clicked");
-            Calculate operation = new Calculate(inputs.getInput_one(),
-                    inputs.getInput_two());
-
-            // Set the Answer into the the answer field
-            inputs.getAnswer().setText(String.format("%s", operation.multiply()));
+            calculations.add(new Multiply(calculations.result(), inputs.getInput_one()));
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
         });
 
         divide.setOnClickListener(v -> {
-            Log.i("Button Press", "Divide clicked");
-            Calculate operation = new Calculate(inputs.getInput_one(),
-                    inputs.getInput_two());
+            calculations.add(new Divide(calculations.result(), inputs.getInput_one()));
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
+        });
 
-            // Set the Answer into the the answer field
-            inputs.getAnswer().setText(String.format("%s", operation.divide()));
+        clear.setOnClickListener(v -> {
+            inputs.clear();
+        });
+
+        allClear.setOnClickListener(v -> {
+            calculations.allClear();
+            inputs.allClear();
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
+        });
+
+        back.setOnClickListener(v -> {
+            calculations.back();
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
+        });
+
+        forward.setOnClickListener(v -> {
+            calculations.forward();
+            inputs.getAnswer().setText(String.format("%s", calculations.result()));
         });
 
     }

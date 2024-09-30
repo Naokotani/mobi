@@ -19,6 +19,15 @@ public class Inputs {
         return !text.isEmpty() ? Double.parseDouble(text) : 0.0;
     }
 
+    public void clear() {
+        input_one.setText("");
+    }
+
+    public void allClear() {
+        input_one.setText("");
+        answer.setText("");
+    }
+
     public double getInput_two() {
         String text = input_two.getText().toString();
         return !text.isEmpty() ? Double.parseDouble(text) : 0.0;

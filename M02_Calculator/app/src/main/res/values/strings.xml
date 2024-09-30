@@ -4,4 +4,8 @@
     <string name="subtract">Subtract</string>
     <string name="divide">Divide</string>
     <string name="multiply">Multiply</string>
+    <string name="clear">C</string>
+    <string name="allClear">AC</string>
+    <string name="back">B</string>
+    <string name="forward">F</string>
 </resources>

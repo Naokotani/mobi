@@ -18,5 +18,4 @@ public class Ball extends Collider {
         bounds.set(x - radius, y - radius, x + radius, y + radius);
         canvas.drawOval(bounds, paint);
     }
-
 }
