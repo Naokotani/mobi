@@ -247,7 +247,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/b_background"
-        android:contentDescription="@string/minus"
+        android:contentDescription="@string/subtract"
         app:layout_constraintStart_toEndOf="@+id/plus"
         app:layout_constraintTop_toBottomOf="@+id/b_clear"
         app:srcCompat="@drawable/minus"
