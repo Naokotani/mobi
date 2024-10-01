@@ -305,5 +305,13 @@
         app:srcCompat="@drawable/arrow_right"
         app:tint="@color/b_foreground" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="140dp"
+        android:layout_height="141dp"
+        app:srcCompat="@drawable/initials_bitmap"
+        tools:layout_editor_absoluteX="135dp"
+        tools:layout_editor_absoluteY="734dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
