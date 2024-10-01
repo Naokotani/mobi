@@ -1,9 +1,13 @@
 package com.example.calculator;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,21 +29,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
 @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Action when "Add" button is pressed
-        Button add = findViewById(R.id.b_Add);
-        Button subtract = findViewById(R.id.b_subtract);
-        Button divide = findViewById(R.id.b_divide);
-        Button multiply = findViewById(R.id.b_multiply);
+        ImageButton add = findViewById(R.id.plus);
+        ImageButton subtract = findViewById(R.id.minus);
+        ImageButton divide = findViewById(R.id.divide);
+        ImageButton multiply = findViewById(R.id.multiply);
+        ImageButton back = findViewById(R.id.back);
+        ImageButton forward = findViewById(R.id.forward);
         Button clear = findViewById(R.id.b_clear);
         Button allClear = findViewById(R.id.b_allClear);
-        Button back = findViewById(R.id.b_back);
-        Button forward = findViewById(R.id.b_forward);
         Button one = findViewById(R.id.input_one);
         Button two = findViewById(R.id.input_two);
         Button three = findViewById(R.id.input_three);
@@ -202,8 +205,15 @@ public class MainActivity extends AppCompatActivity {
             }
             input.setInput('0');
         });
+
         decimal.setOnClickListener(v -> {
-            input.setInput('.');
+            if(!input.getInput().contains(".")) {
+                if(Objects.equals(input.getInput(), "0")) {
+                    input.setInput("0.");
+                } else {
+                    input.setInput('.');
+                }
+            }
         });
 
 
