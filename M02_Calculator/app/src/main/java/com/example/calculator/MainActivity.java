@@ -108,21 +108,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         back.setOnClickListener(v -> {
-            total.set(total.get() - calculations.get().result());
             calculations.get().back();
+            operator.set('s');
+            total.set(calculations.get().result());
             input.setInput(calculations.get().resultString());
             input.setHistory(calculations.get().getHistoryString());
         });
 
         forward.setOnClickListener(v -> {
             calculations.get().forward();
-            total.set(total.get() + calculations.get().result());
+            operator.set('s');
+            total.set(calculations.get().result());
             input.setInput(calculations.get().resultString());
             input.setHistory(calculations.get().getHistoryString());
         });
 
         equals.setOnClickListener(v -> {
             calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            operator.set('s');
             input.setInput(calculations.get().resultString());
             total.set(calculations.get().result());
             input.setHistory(calculations.get().getHistoryString());

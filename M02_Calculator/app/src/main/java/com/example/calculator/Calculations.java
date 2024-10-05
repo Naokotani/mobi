@@ -70,11 +70,7 @@ public class Calculations {
         return operations.size();
     }
 
-    public char getSeedOperator() {
-        return operations.get(0).getOperator();
-    }
-
-    public double getSeedValue() {
-        return operations.get(0).getResult();
+    public char getOperator() {
+        return operations.get(currentIndex).getOperator();
     }
 }
