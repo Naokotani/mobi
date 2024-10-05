@@ -24,17 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CharacterDBConnection extends SQLiteOpenHelper implements Repository<Character> {
-    private Context appContext;
+    private final Context context;
     public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "DB_Name.db";
     private static final String TABLE_NAME = "sample_table";
     private static final String CHARACTER_TABLE = "character_table";
     private static final String SQL_CREATE_CHARACTER_TABLE =
-            "CREATE TABLE " +
-                    CHARACTER_TABLE +
-                    "(id INTEGER PRIMARY KEY NOT NULL," +
-                    " name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256)," +
-                    " bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER)";
+            "CREATE TABLE IF NOT EXISTS " + CHARACTER_TABLE +
+                    " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER)";
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final String SQL_DELETE_CHARACTER_TABLE =
@@ -42,6 +39,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
 
     public CharacterDBConnection(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -107,9 +105,11 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     }
 
     @Override
-    public void buildDB(Context context) {
+    public void buildDB() {
         if(!isTable()){
-            createCharactersTable(appContext);
+            SQLiteDatabase db = getWritableDatabase();
+            createCharactersTable(context, db);
+            db.close();
         }
     }
 
@@ -185,8 +185,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     }
 
     public void onCreate(SQLiteDatabase db) {
-        appContext = appContext.getApplicationContext();
-        createCharactersTable(appContext);
+        createCharactersTable(context, db);
     }
 
 
@@ -216,13 +215,11 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         db.insert(CHARACTER_TABLE, null, values);
     }
 
-    public void createCharactersTable(Context context) {
+    public void createCharactersTable(Context context, SQLiteDatabase db) {
         final String json = getJSONString(context);
         final List<Character> characters = getCharacters(json);
-        SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(SQL_CREATE_CHARACTER_TABLE);
         characters.forEach(c -> createCharacterRow(db, c));
-        db.close();
     }
 
     @Override

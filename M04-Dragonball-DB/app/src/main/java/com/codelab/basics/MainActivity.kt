@@ -22,7 +22,6 @@
 package com.codelab.basics
 
 import android.os.Bundle
-import android.print.PrintAttributes.Margins
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -45,7 +44,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,12 +57,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
@@ -85,25 +80,16 @@ import com.codelab.basics.ui.theme.Typography
  * It's waiting for real data....
  */
 class MainActivity : ComponentActivity() {
-
-    val dragonBallColors: DragonBallColors = DragonBallColors();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Open the DB
-
         val characterDB: Repository<Character> =  CharacterDBConnection(this@MainActivity)
+        characterDB.buildDB()
 
-        Log.i("Character db", "Deleting character db")
-        characterDB.buildDB(this@MainActivity)
-
-        // Then the real data
         setContent {
             BasicsCodelabTheme {
                 MyApp(
-                    modifier = Modifier.fillMaxSize()
-                    // Get the data from the DB for display
-                    , names = characterDB.findAll()
+                    modifier = Modifier.fillMaxSize(),
+                    names = characterDB.findAll()
                 )
             }
         }
@@ -113,7 +99,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(
     modifier: Modifier = Modifier,
-    names: List<Character>
+    names: List<Character>,
 ) {
     val windowInfo = rememberWindowInfo()  // get size of this screen
     var index by remember { mutableIntStateOf(-1) } // which name to display
@@ -200,7 +186,6 @@ private fun ShowEachListItem(
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
         CardContent(name, pos, updateIndex)
-        Log.d("CodeLab_DB", "Greeting: ")
     }
 }
 
@@ -208,7 +193,7 @@ private fun ShowEachListItem(
 private fun CardContent(
     name: Character,
     pos: Int,
-    updateIndex: (index: Int) -> Unit
+    updateIndex: (index: Int) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Row(
@@ -232,7 +217,7 @@ private fun CardContent(
                     contentColor = DragonBallColors().KRILLIN_YELLOW
                 ),
                 onClick = {
-                    updateIndex(pos);
+                    updateIndex(pos)
                     Log.d(
                         "CodeLab_DB",
                         "Clicked = ${name.name} "
@@ -254,7 +239,9 @@ private fun CardContent(
                 Text("Ki Restore Speed: " + name.kiRestoreSpeed.toString())
             }
         }
-        IconButton(onClick = { expanded = !expanded }) {
+        IconButton(onClick = {
+            expanded = !expanded
+        }) {
             Icon(
                 imageVector = if (expanded) Filled.ExpandLess else Filled.ExpandMore,
                 contentDescription = if (expanded) {
