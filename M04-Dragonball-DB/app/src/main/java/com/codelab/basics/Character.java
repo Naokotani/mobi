@@ -1,7 +1,5 @@
 package com.codelab.basics;
 
-import java.util.List;
-
 public class Character {
     public final int id;
     public final String name;
@@ -13,7 +11,8 @@ public class Character {
     public final int defense;
     public final int kiRestoreSpeed;
 
-    public Character(int id, String name, String race, String gender, String bio, int health, int attack,
+    public Character(int id, String name, String race, String gender,
+                     String bio, int health, int attack,
                      int defense, int kiRestoreSpeed) {
         this.id = id;
         this.name = name;

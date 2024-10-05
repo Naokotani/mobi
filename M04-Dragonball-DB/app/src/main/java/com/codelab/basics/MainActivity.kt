@@ -62,7 +62,6 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
 
@@ -103,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 MyApp(
                     modifier = Modifier.fillMaxSize()
                     // Get the data from the DB for display
-                    , names = DBtest.findAll()
+                    , names = DBtest.findAllCharacters()
                 )
             }
         }
@@ -113,7 +112,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(
     modifier: Modifier = Modifier,
-    names: List<DataModel>
+    names: List<Character>
 ) {
     val windowInfo = rememberWindowInfo()  // get size of this screen
     var index by remember { mutableIntStateOf(-1) } // which name to display
@@ -174,7 +173,7 @@ fun MyApp(
 @Composable
 private fun ShowPageMaster(
     modifier: Modifier = Modifier,
-    names: List<DataModel>,
+    names: List<Character>,
     updateIndex: (index: Int) -> Unit
 ) {
     LazyColumn(
@@ -189,7 +188,7 @@ private fun ShowPageMaster(
 
 @Composable
 private fun ShowEachListItem(
-    name: DataModel,
+    name: Character,
     pos: Int,
     updateIndex: (index: Int) -> Unit
 ) {
@@ -206,7 +205,7 @@ private fun ShowEachListItem(
 
 @Composable
 private fun CardContent(
-    name: DataModel,
+    name: Character,
     pos: Int,
     updateIndex: (index: Int) -> Unit
 ) {
@@ -241,7 +240,7 @@ private fun CardContent(
             { Text(text = "Details ${pos}") }
             Text(
                 // Just the name of this record
-                text = name.modelName,
+                text = name.name,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold
                 )
@@ -269,7 +268,7 @@ private fun CardContent(
 
 @Composable
 private fun ShowPageDetails(
-    name: DataModel,
+    name: Character,
     updateIndex: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
     index: Int

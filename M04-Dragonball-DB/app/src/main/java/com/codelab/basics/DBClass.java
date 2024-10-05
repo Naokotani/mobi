@@ -149,20 +149,14 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
 
     public List<Character> findAllCharacters() {
         List<Character> characters = new ArrayList<>();
-        // 1. build the query
         String query = "SELECT  * FROM " + CHARACTER_TABLE;
 
-        // 2. get reference to writable DB
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        // 3. go over each row, build and add it to list
         Character character;
         if (cursor.moveToFirst()) {
             do {
-                // This code puts a dataModel object into the PlaceHolder for the fragment
-                // if you had more columns in the DB, you'd format  them in the non-details
-                // list here
                 character = new Character(
                         cursor.getInt(0),
                         cursor.getString(1),
@@ -179,12 +173,11 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
         }
 
         db.close();
-        // return all
         return characters;
 
     }
     @Override
-    /**
+    /*
      * This JavaDoc goes with this method type / * * and hit enter
      */
     public void onCreate(SQLiteDatabase db) {
