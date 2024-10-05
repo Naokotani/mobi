@@ -45,6 +45,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
+import com.codelab.basics.ui.theme.DragonBallColors
 import com.codelab.basics.ui.theme.Typography
 
 /**
@@ -84,6 +86,7 @@ import com.codelab.basics.ui.theme.Typography
  */
 class MainActivity : ComponentActivity() {
 
+    val dragonBallColors: DragonBallColors = DragonBallColors();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -116,7 +119,7 @@ fun MyApp(
     var index by remember { mutableIntStateOf(-1) } // which name to display
     var showMaster: Boolean = (index == -1) // fudge to force master list first, when compact
 
-    Surface(modifier, color = MaterialTheme.colorScheme.background) {
+    Surface(modifier, color = DragonBallColors().FRIEZA_PURPLE){
         // either one page at a time, or both side-by-side
         Log.d(
             "CodeLab_DB",
@@ -192,7 +195,7 @@ private fun ShowEachListItem(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = DragonBallColors().GOKU_ORANGE
         ),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
@@ -225,8 +228,8 @@ private fun CardContent(
         ) {
             Button(
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green,
-                    contentColor = Color.Red
+                    containerColor = DragonBallColors().VEGETA_BLUE,
+                    contentColor = DragonBallColors().KRILLIN_YELLOW
                 ),
                 onClick = {
                     updateIndex(pos);
@@ -280,22 +283,40 @@ private fun ShowPageDetails(
     )
     {
         Text(text ="Bio\n\n",
+            color = DragonBallColors().BULMA_AQUA,
         style = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.ExtraBold))
         Text(text = name.bio,
-            style = Typography.bodyMedium,
-            modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp)
+            color = DragonBallColors().KAMI_WHITE,
+            style = Typography.bodyLarge,
+            modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp,
+            )
         )
 
         if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) {
-            Button(onClick = { updateIndex(-1) })
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = DragonBallColors().VEGETA_BLUE,
+                    contentColor = DragonBallColors().KRILLIN_YELLOW
+                ),
+                onClick = { updateIndex(-1)})
             { Text(text = "Characters") }
         }
         // need check for end of array
-        Button(onClick = { updateIndex(index + 1) })
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DragonBallColors().VEGETA_BLUE,
+                contentColor = DragonBallColors().KRILLIN_YELLOW
+            ),
+            onClick = { updateIndex(index + 1) })
         { Text(text = "Next") }
         if (index > 0) {
-            Button(onClick = { updateIndex(index - 1) })
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = DragonBallColors().VEGETA_BLUE,
+                    contentColor = DragonBallColors().KRILLIN_YELLOW
+                ),
+                onClick = { updateIndex(index - 1) })
             { Text(text = "Prev") }
         }
     }

@@ -33,15 +33,15 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
 private val DarkColorScheme = darkColorScheme(
-    surface = Blue,
-    onSurface = Navy,
+    surface = FRIEZA_PURPLE,
+    onSurface = FRIEZA_PURPLE,
     primary = Navy,
     onPrimary = Chartreuse
 )
 
 private val LightColorScheme = lightColorScheme(
-    surface = Blue,
-    onSurface = Color.White,
+    surface = FRIEZA_PURPLE,
+    onSurface = FRIEZA_PURPLE,
     primary = LightBlue,
     onPrimary = Navy
 )

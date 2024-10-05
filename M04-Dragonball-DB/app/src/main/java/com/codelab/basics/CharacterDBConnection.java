@@ -195,7 +195,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         @SuppressLint("Recycle") Cursor c = db.query(true,
                 "sqlite_master",
                 new String[]{"name"},
-                "WHERE type=? AND name=?",
+                "type=? AND name=?",
                 new String[]{"table", CHARACTER_TABLE},
                 null, null, null,
                 "1");
