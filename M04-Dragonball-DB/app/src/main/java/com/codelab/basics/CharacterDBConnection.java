@@ -1,6 +1,7 @@
 package com.codelab.basics;
 
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -22,16 +23,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by w0091766 on 4/29/2016.
- */
 public class CharacterDBConnection extends SQLiteOpenHelper implements Repository<Character> {
-
     private Context appContext;
     public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "DB_Name.db";
-    // If you change the database schema, you must increment the database version.
     private static final String TABLE_NAME = "sample_table";
     private static final String CHARACTER_TABLE = "character_table";
     private static final String SQL_CREATE_CHARACTER_TABLE =
@@ -45,10 +40,8 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     private static final String SQL_DELETE_CHARACTER_TABLE =
             "DROP TABLE IF EXISTS " + CHARACTER_TABLE;
 
-
     public CharacterDBConnection(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
     }
 
     @Override
@@ -199,7 +192,13 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
 
     private boolean isTable() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='character_table'", null);
+        @SuppressLint("Recycle") Cursor c = db.query(true,
+                "sqlite_master",
+                new String[]{"name"},
+                "WHERE type=? AND name=?",
+                new String[]{"table", CHARACTER_TABLE},
+                null, null, null,
+                "1");
         return (c.getCount() > 0);
     }
 
@@ -226,7 +225,8 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         db.close();
     }
 
-    public void deleteCharacterTable() {
+    @Override
+    public void deleteRepository() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(SQL_DELETE_CHARACTER_TABLE);
         db.close();

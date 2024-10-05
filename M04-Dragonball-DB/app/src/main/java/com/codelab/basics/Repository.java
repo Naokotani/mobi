@@ -13,4 +13,5 @@ public interface Repository<T> {
     T findEntryByID(int id);
     void buildDB(Context context);
     String getNameById(Long id);  // Not implemented
+    void deleteRepository();
 }
