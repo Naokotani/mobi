@@ -22,6 +22,7 @@
 package com.codelab.basics
 
 import android.os.Bundle
+import android.print.PrintAttributes.Margins
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -61,9 +62,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
+import com.codelab.basics.ui.theme.Typography
 
 /**
  * Sample DB Compose app with Master-Details pages
@@ -84,17 +88,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Open the DB
-        val DBtest = DBClass(this@MainActivity)
+
+        val characterDB: Repository<Character> =  CharacterDBConnection(this@MainActivity)
 
         Log.i("Character db", "Deleting character db")
-        DBtest.deleteCharacterTable()
-        if(!DBtest.isCharactersTable()) {
-            Log.i("Character db", "Creating character db")
-            DBtest.createCharactersTable(this@MainActivity)
-        }
-
-        val characters = DBtest.findAllCharacters()
-        characters.forEach{c -> Log.i("print", c.name)}
+        characterDB.buildDB(this@MainActivity)
 
         // Then the real data
         setContent {
@@ -102,7 +100,7 @@ class MainActivity : ComponentActivity() {
                 MyApp(
                     modifier = Modifier.fillMaxSize()
                     // Get the data from the DB for display
-                    , names = DBtest.findAllCharacters()
+                    , names = characterDB.findAll()
                 )
             }
         }
@@ -234,22 +232,23 @@ private fun CardContent(
                     updateIndex(pos);
                     Log.d(
                         "CodeLab_DB",
-                        "Clicked = ${name.toString()} "
+                        "Clicked = ${name.name} "
                     )
                 })
-            { Text(text = "Details ${pos}") }
+            { Text(text = "Bio") }
             Text(
                 // Just the name of this record
                 text = name.name,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold
-                )
+                ),
             )
             if (expanded) {
-                Text(
-                    text = (name.toString())  // Full toString of data
-                )
-                Log.d("CodeLab_DB", "Expanded name = ${name.toString()} ")
+                Text("Race: " + name.race)
+                Text("Gender: " + name.gender)
+                Text("Attack: " + name.attack.toString())
+                Text("Defense: " + name.defense.toString())
+                Text("Ki Restore Speed: " + name.kiRestoreSpeed.toString())
             }
         }
         IconButton(onClick = { expanded = !expanded }) {
@@ -280,12 +279,17 @@ private fun ShowPageDetails(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        Text(name.toString())
-        Log.d("CodeLab_DB", "ShowData: $name.toString()")
+        Text(text ="Bio\n\n",
+        style = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.ExtraBold))
+        Text(text = name.bio,
+            style = Typography.bodyMedium,
+            modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp)
+        )
 
         if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) {
             Button(onClick = { updateIndex(-1) })
-            { Text(text = "Master") }
+            { Text(text = "Characters") }
         }
         // need check for end of array
         Button(onClick = { updateIndex(index + 1) })
