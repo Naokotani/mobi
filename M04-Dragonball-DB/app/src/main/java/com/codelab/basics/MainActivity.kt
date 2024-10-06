@@ -58,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -82,8 +83,7 @@ import com.codelab.basics.ui.theme.Typography
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val characterDB: Repository<Character> =  CharacterDBConnection(this@MainActivity)
-        characterDB.buildDB()
+        val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(this@MainActivity)
 
         setContent {
             BasicsCodelabTheme {
@@ -163,12 +163,18 @@ private fun ShowPageMaster(
     names: List<Character>,
     updateIndex: (index: Int) -> Unit
 ) {
+    val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(LocalContext.current)
+    val character = characterDB.getFavorite()
     LazyColumn(
         modifier = modifier.padding(vertical = 4.dp)
     ) {
         itemsIndexed(items = names) { pos, name ->
             Log.d("CodeLab_DB", "Item at index $pos is $name")
-            ShowEachListItem(name = name, pos, updateIndex)
+            if(pos == 0) {
+                ShowEachListItem(character,character.id - 1, updateIndex, true)
+            } else if (name.id != character.id) {
+                ShowEachListItem(name = name, pos, updateIndex, false)
+            }
         }
     }
 }
@@ -177,15 +183,16 @@ private fun ShowPageMaster(
 private fun ShowEachListItem(
     name: Character,
     pos: Int,
-    updateIndex: (index: Int) -> Unit
+    updateIndex: (index: Int) -> Unit,
+    favorite: Boolean
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = DragonBallColors().GOKU_ORANGE
+            containerColor = if(favorite) DragonBallColors().BULMA_AQUA else DragonBallColors().GOKU_ORANGE
         ),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        CardContent(name, pos, updateIndex)
+        CardContent(name, pos, updateIndex, favorite)
     }
 }
 
@@ -194,7 +201,9 @@ private fun CardContent(
     name: Character,
     pos: Int,
     updateIndex: (index: Int) -> Unit,
+    favorite: Boolean
 ) {
+    val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(LocalContext.current)
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -218,15 +227,12 @@ private fun CardContent(
                 ),
                 onClick = {
                     updateIndex(pos)
-                    Log.d(
-                        "CodeLab_DB",
-                        "Clicked = ${name.name} "
-                    )
                 })
             { Text(text = "Bio") }
+            Log.d("favorite", favorite.toString())
             Text(
                 // Just the name of this record
-                text = name.name,
+                text = if(favorite)name.name + " ⭐ Favorite" else name.name,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold
                 ),
@@ -241,6 +247,9 @@ private fun CardContent(
         }
         IconButton(onClick = {
             expanded = !expanded
+            if (!expanded) {
+                characterDB.incrementFavorite(name.id)
+            }
         }) {
             Icon(
                 imageVector = if (expanded) Filled.ExpandLess else Filled.ExpandMore,

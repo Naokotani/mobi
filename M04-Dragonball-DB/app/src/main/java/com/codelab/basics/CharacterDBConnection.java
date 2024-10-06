@@ -1,6 +1,5 @@
 package com.codelab.basics;
 
-
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,13 +8,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,22 +20,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CharacterDBConnection extends SQLiteOpenHelper implements Repository<Character> {
-    private final Context context;
+    private static CharacterDBConnection instance;
     public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "DB_Name.db";
     private static final String TABLE_NAME = "sample_table";
     private static final String CHARACTER_TABLE = "character_table";
     private static final String SQL_CREATE_CHARACTER_TABLE =
             "CREATE TABLE IF NOT EXISTS " + CHARACTER_TABLE +
-                    " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER)";
+                    " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER, access_count INTEGER)";
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final String SQL_DELETE_CHARACTER_TABLE =
             "DROP TABLE IF EXISTS " + CHARACTER_TABLE;
+    private final String json;
 
-    public CharacterDBConnection(Context context) {
+    private CharacterDBConnection(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
+        json = getJSONString(context);
+    }
+
+    public static synchronized CharacterDBConnection getInstance(Context context) {
+        if(instance == null) {
+            instance = new CharacterDBConnection(context);
+            instance.buildDB();
+        }
+        return instance;
     }
 
     @Override
@@ -57,8 +62,6 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                 characters.add(character);
             } while (cursor.moveToNext());
         }
-
-        db.close();
         return characters;
     }
 
@@ -101,15 +104,12 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     public void save(Character character) {
         SQLiteDatabase db = this.getWritableDatabase();
         createCharacterRow(db, character);
-        db.close();
     }
 
-    @Override
-    public void buildDB() {
+    private void buildDB() {
         if(!isTable()){
             SQLiteDatabase db = getWritableDatabase();
-            createCharactersTable(context, db);
-            db.close();
+            createCharactersTable(db);
         }
     }
 
@@ -126,6 +126,29 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     @Override
     public String getNameById(Long id) {
         return null;
+    }
+
+    @Override
+    public void incrementFavorite(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = String.format("UPDATE %s SET access_count = access_count + 1 WHERE id = ?", CHARACTER_TABLE);
+        db.execSQL(query, new String[]{Integer.toString(id)});
+    }
+
+    @Override
+    public Character getFavorite() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(true,
+                CHARACTER_TABLE,
+                new String[]{"*"},
+                null,
+                null,
+                null,
+                null,
+                "access_count DESC",
+                "1" );
+        cursor.moveToFirst();
+        return getRow(cursor);
     }
 
     private List<Character> getCharacters(String json) {
@@ -157,7 +180,8 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                     Integer.parseInt(character.getString("health").replaceAll(",","")),
                     Integer.parseInt(character.getString("attack").replaceAll(",","")),
                     Integer.parseInt(character.getString("defense").replaceAll(",","")),
-                    Integer.parseInt(character.getString("kiRestoreSpeed").replaceAll(",",""))
+                    Integer.parseInt(character.getString("kiRestoreSpeed").replaceAll(",","")),
+                    0
             );
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -185,7 +209,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     }
 
     public void onCreate(SQLiteDatabase db) {
-        createCharactersTable(context, db);
+        createCharactersTable(db);
     }
 
 
@@ -212,11 +236,11 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         values.put("attack", character.attack);
         values.put("defense", character.defense);
         values.put("ki", character.kiRestoreSpeed);
+        values.put("access_count", 0);
         db.insert(CHARACTER_TABLE, null, values);
     }
 
-    public void createCharactersTable(Context context, SQLiteDatabase db) {
-        final String json = getJSONString(context);
+    public void createCharactersTable(SQLiteDatabase db) {
         final List<Character> characters = getCharacters(json);
         db.execSQL(SQL_CREATE_CHARACTER_TABLE);
         characters.forEach(c -> createCharacterRow(db, c));
@@ -226,7 +250,6 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     public void deleteRepository() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(SQL_DELETE_CHARACTER_TABLE);
-        db.close();
     }
 
     private Character getRow(Cursor cursor) {
@@ -239,6 +262,8 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                 cursor.getInt(5),
                 cursor.getInt(6),
                 cursor.getInt(7),
-                cursor.getInt(8));
+                cursor.getInt(8),
+                0
+        );
     }
 }

@@ -11,7 +11,8 @@ public interface Repository<T> {
     int deleteById(Long id);  // Not implemented
     List<T> findAll();
     T findEntryByID(int id);
-    void buildDB();
     String getNameById(Long id);  // Not implemented
     void deleteRepository();
+    void incrementFavorite(int id);
+    T getFavorite();
 }
