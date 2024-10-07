@@ -22,9 +22,9 @@ import java.util.List;
 public class CharacterDBConnection extends SQLiteOpenHelper implements Repository<Character> {
     private static CharacterDBConnection instance;
     public static final int DATABASE_VERSION = 3;
-    public static final String DATABASE_NAME = "DB_Name.db";
+    public static final String DATABASE_NAME = "dragonball.db";
     private static final String TABLE_NAME = "sample_table";
-    private static final String CHARACTER_TABLE = "character_table";
+    private static final String CHARACTER_TABLE = "characters";
     private static final String SQL_CREATE_CHARACTER_TABLE =
             "CREATE TABLE IF NOT EXISTS " + CHARACTER_TABLE +
                     " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER, access_count INTEGER)";

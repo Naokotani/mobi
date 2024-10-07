@@ -37,6 +37,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -54,32 +56,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
 import com.codelab.basics.ui.theme.DragonBallColors
 import com.codelab.basics.ui.theme.Typography
+import kotlinx.coroutines.launch
 
-/**
- * Sample DB Compose app with Master-Details pages
- * ShowPageMaster ... shows the list of DB elements
- * ShowPageDetails ... shows the detail contents of one element
- *
- * Added Adaptive behavior...
- *  - show master and details on different screens
- *  - if landscape, show master and details side-by-side
- *
- * Use the logcat to follow the logic.
- *
- * It's waiting for real data....
- */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,7 +123,7 @@ fun MyApp(
             Row(
                 Modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(1.dp)
             ) {
                 Column(
                     Modifier
@@ -146,7 +138,7 @@ fun MyApp(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(Red)
+                        .background(DragonBallColors().FRIEZA_PURPLE)
                 ) {
                     ShowPageDetails(name = names[index],  // List starts at 0, DB records start at 1
                         index = index,               // use index for prev, next screen
@@ -263,28 +255,42 @@ private fun CardContent(
     }
 }
 
-
 @Composable
 private fun ShowPageDetails(
     name: Character,
     updateIndex: (index: Int) -> Unit,
-    modifier: Modifier = Modifier,
     index: Int
 ) {
     val windowInfo = rememberWindowInfo()  // sorta global, not good
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+    val libreBaskerville = FontFamily(Font(R.font.librebaskerville_regular))
+    val sourSans = FontFamily(Font(R.font.sourcecodepro_variablefont_wght))
+    fun scrollToTop(){
+        scope.launch {
+            scrollState.scrollTo(0)
+        }
+    }
     Column(
-        modifier = modifier.fillMaxWidth(0.5f),
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .verticalScroll(scrollState)
+            .padding(20.dp)
+        ,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
         Text(text ="Bio\n\n",
             color = DragonBallColors().BULMA_AQUA,
-        style = MaterialTheme.typography.headlineMedium.copy(
+            fontFamily = sourSans,
+            style = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.ExtraBold))
+
         Text(text = name.bio,
             color = DragonBallColors().KAMI_WHITE,
             style = Typography.bodyLarge,
+            fontFamily = libreBaskerville,
             modifier = Modifier.padding(vertical = 20.dp, horizontal = 20.dp,
             )
         )
@@ -304,7 +310,10 @@ private fun ShowPageDetails(
                 containerColor = DragonBallColors().VEGETA_BLUE,
                 contentColor = DragonBallColors().KRILLIN_YELLOW
             ),
-            onClick = { updateIndex(index + 1) })
+            onClick = {
+                scrollToTop()
+                updateIndex(index + 1)
+            })
         { Text(text = "Next") }
         if (index > 0) {
             Button(
@@ -312,7 +321,10 @@ private fun ShowPageDetails(
                     containerColor = DragonBallColors().VEGETA_BLUE,
                     contentColor = DragonBallColors().KRILLIN_YELLOW
                 ),
-                onClick = { updateIndex(index - 1) })
+                onClick = {
+                    updateIndex(index - 1)
+                    scrollToTop()
+                })
             { Text(text = "Prev") }
         }
     }
