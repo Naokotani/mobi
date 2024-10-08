@@ -32,21 +32,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 
-private val DarkColorScheme = darkColorScheme(
+val DarkColorScheme = darkColorScheme(
     surface = FRIEZA_PURPLE,
     onSurface = FRIEZA_PURPLE,
-    primary = Navy,
+    primary = CELL_GREEN,
     onPrimary = Chartreuse
 )
 
-private val LightColorScheme = lightColorScheme(
+val LightColorScheme = lightColorScheme(
     surface = FRIEZA_PURPLE,
     onSurface = FRIEZA_PURPLE,
-    primary = LightBlue,
-    onPrimary = Navy
+    primary = Color.Red,
+    onPrimary = Navy,
+    background = GOKU_ORANGE
 )
 
-@Suppress("DEPRECATION")
 @Composable
 fun BasicsCodelabTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

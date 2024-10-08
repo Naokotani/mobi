@@ -14,7 +14,7 @@ public class Character {
 
     public Character(int id, String name, String race, String gender,
                      String bio, int health, int attack,
-                     int defense, int kiRestoreSpeed, int access_count) {
+                     int defense, int kiRestoreSpeed) {
         this.id = id;
         this.name = name;
         this.race = race;
@@ -24,8 +24,6 @@ public class Character {
         this.attack = attack;
         this.defense = defense;
         this.kiRestoreSpeed = kiRestoreSpeed;
-        this.access_count = access_count;
+        this.access_count = 0;
     }
-
-
 }

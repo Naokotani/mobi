@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(this@MainActivity)
 
         setContent {
@@ -97,7 +98,7 @@ fun MyApp(
     var index by remember { mutableIntStateOf(-1) } // which name to display
     var showMaster: Boolean = (index == -1) // fudge to force master list first, when compact
 
-    Surface(modifier, color = DragonBallColors().FRIEZA_PURPLE){
+    Surface(modifier /*color = DragonBallColors().FRIEZA_PURPLE*/){
         // either one page at a time, or both side-by-side
         Log.d(
             "CodeLab_DB",
@@ -138,7 +139,7 @@ fun MyApp(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(DragonBallColors().FRIEZA_PURPLE)
+//                        .background(DragonBallColors().FRIEZA_PURPLE)
                 ) {
                     ShowPageDetails(name = names[index],  // List starts at 0, DB records start at 1
                         index = index,               // use index for prev, next screen
@@ -160,12 +161,12 @@ private fun ShowPageMaster(
     LazyColumn(
         modifier = modifier.padding(vertical = 4.dp)
     ) {
-        itemsIndexed(items = names) { pos, name ->
-            Log.d("CodeLab_DB", "Item at index $pos is $name")
-            if(pos == 0) {
+        itemsIndexed(items = names) { index, name ->
+            Log.d("CodeLab_DB", "Item at index $index is $name")
+            if(index == 0) {
                 ShowEachListItem(character,character.id - 1, updateIndex, true)
             } else if (name.id != character.id) {
-                ShowEachListItem(name = name, pos, updateIndex, false)
+                ShowEachListItem(name = name, index, updateIndex, false)
             }
         }
     }
@@ -281,7 +282,7 @@ private fun ShowPageDetails(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        Text(text ="Bio\n\n",
+        Text(text ="Bio",
             color = DragonBallColors().BULMA_AQUA,
             fontFamily = sourSans,
             style = MaterialTheme.typography.headlineMedium.copy(

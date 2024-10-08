@@ -7,7 +7,6 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +33,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
             "DROP TABLE IF EXISTS " + CHARACTER_TABLE;
     private final String json;
 
-    private CharacterDBConnection(Context context) {
+    private CharacterDBConnection(Context context ) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         json = getJSONString(context);
     }
@@ -52,64 +51,68 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         List<Character> characters = new ArrayList<>();
         String query = "SELECT  * FROM " + CHARACTER_TABLE;
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
+        try(SQLiteDatabase db = this.getReadableDatabase()) {
+            Cursor cursor = db.rawQuery(query, null);
 
-        Character character;
-        if (cursor.moveToFirst()) {
-            do {
-                character = getRow(cursor);
-                characters.add(character);
-            } while (cursor.moveToNext());
+            Character character;
+            if (cursor.moveToFirst()) {
+                do {
+                    character = getRow(cursor);
+                    characters.add(character);
+                } while (cursor.moveToNext());
+            }
+            return characters;
         }
-        return characters;
     }
 
     @Override
     public Character findEntryByID(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(true,
-                CHARACTER_TABLE,
-                new String[]{"*"},
-                "WHERE id = ?",
-                new String[]{"" + id},
-                null,
-                null,
-                null,
-                "1" );
+        try(SQLiteDatabase db = this.getReadableDatabase()) {
+            Cursor cursor = db.query(true,
+                    CHARACTER_TABLE,
+                    new String[]{"*"},
+                    "WHERE id = ?",
+                    new String[]{"" + id},
+                    null,
+                    null,
+                    null,
+                    "1" );
 
-        cursor.moveToFirst();
-        return getRow(cursor);
+            cursor.moveToFirst();
+            return getRow(cursor);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
-        Log.d("DBClass", "DB onUpgrade() to version " + DATABASE_VERSION);
         db.execSQL(SQL_DELETE_TABLE);
         onCreate(db);
+        db.close();
     }
 
     @Override
     public int count() {
         String countQuery = "SELECT  * FROM " + TABLE_NAME;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        int cnt = cursor.getCount();
-        cursor.close();
-        Log.v("DBClass", "getCount=" + cnt);
-        return cnt;
+        try(SQLiteDatabase db = this.getReadableDatabase()) {
+            Cursor cursor = db.rawQuery(countQuery, null);
+            int cnt = cursor.getCount();
+            cursor.close();
+            return cnt;
+        }
     }
 
     @Override
     public void save(Character character) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        createCharacterRow(db, character);
+        try(SQLiteDatabase db = this.getWritableDatabase()) {
+            createCharacterRow(db, character);
+        }
     }
 
     private void buildDB() {
         if(!isTable()){
-            SQLiteDatabase db = getWritableDatabase();
-            createCharactersTable(db);
+            try(SQLiteDatabase db = getWritableDatabase()) {
+                createCharactersTable(db);
+            }
         }
     }
 
@@ -130,25 +133,29 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
 
     @Override
     public void incrementFavorite(int id) {
-        SQLiteDatabase db = getWritableDatabase();
-        String query = String.format("UPDATE %s SET access_count = access_count + 1 WHERE id = ?", CHARACTER_TABLE);
-        db.execSQL(query, new String[]{Integer.toString(id)});
+        try(SQLiteDatabase db = getWritableDatabase()) {
+            String query =
+                    String.format("UPDATE %s SET access_count = access_count + 1 WHERE id = ?",
+                            CHARACTER_TABLE);
+            db.execSQL(query, new String[]{Integer.toString(id)});
+        }
     }
 
     @Override
     public Character getFavorite() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(true,
-                CHARACTER_TABLE,
-                new String[]{"*"},
-                null,
-                null,
-                null,
-                null,
-                "access_count DESC",
-                "1" );
-        cursor.moveToFirst();
-        return getRow(cursor);
+        try(SQLiteDatabase db = getReadableDatabase()) {
+            Cursor cursor = db.query(true,
+                    CHARACTER_TABLE,
+                    new String[]{"*"},
+                    null,
+                    null,
+                    null,
+                    null,
+                    "access_count DESC",
+                    "1" );
+            cursor.moveToFirst();
+            return getRow(cursor);
+        }
     }
 
     private List<Character> getCharacters(String json) {
@@ -180,8 +187,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                     Integer.parseInt(character.getString("health").replaceAll(",","")),
                     Integer.parseInt(character.getString("attack").replaceAll(",","")),
                     Integer.parseInt(character.getString("defense").replaceAll(",","")),
-                    Integer.parseInt(character.getString("kiRestoreSpeed").replaceAll(",","")),
-                    0
+                    Integer.parseInt(character.getString("kiRestoreSpeed").replaceAll(",",""))
             );
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -212,17 +218,17 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         createCharactersTable(db);
     }
 
-
     private boolean isTable() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        @SuppressLint("Recycle") Cursor c = db.query(true,
-                "sqlite_master",
-                new String[]{"name"},
-                "type=? AND name=?",
-                new String[]{"table", CHARACTER_TABLE},
-                null, null, null,
-                "1");
-        return (c.getCount() > 0);
+        try(SQLiteDatabase db = this.getReadableDatabase()) {
+            @SuppressLint("Recycle") Cursor c = db.query(true,
+                    "sqlite_master",
+                    new String[]{"name"},
+                    "type=? AND name=?",
+                    new String[]{"table", CHARACTER_TABLE},
+                    null, null, null,
+                    "1");
+            return (c.getCount() > 0);
+        }
     }
 
     private void createCharacterRow(SQLiteDatabase db, Character character) {
@@ -248,8 +254,9 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
 
     @Override
     public void deleteRepository() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(SQL_DELETE_CHARACTER_TABLE);
+        try(SQLiteDatabase db = this.getWritableDatabase()) {
+            db.execSQL(SQL_DELETE_CHARACTER_TABLE);
+        }
     }
 
     private Character getRow(Cursor cursor) {
@@ -262,8 +269,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                 cursor.getInt(5),
                 cursor.getInt(6),
                 cursor.getInt(7),
-                cursor.getInt(8),
-                0
+                cursor.getInt(8)
         );
     }
 }
