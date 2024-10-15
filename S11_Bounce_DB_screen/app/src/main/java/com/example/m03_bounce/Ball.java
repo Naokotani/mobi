@@ -6,52 +6,36 @@ import android.graphics.RectF;
 
 import java.util.Random;
 
-
-/**
- * Created by Russ on 08/04/2014.
- */
 public class Ball {
-
-    float radius = 50;      // Ball's radius
-    float x;                // Ball's center (x,y)
+    private static final float radius = 50;
+    float x;
     float y;
-    float speedX;           // Ball's speed
+    float speedX;
     float speedY;
-    private RectF bounds;   // Needed for Canvas.drawOval
-    private Paint paint;    // The paint style, color used for drawing
+    private final RectF bounds = new RectF();
+    private final Paint paint = new Paint();
+    private double ax, ay;
 
-    // Add accelerometer
-    // Add ... implements SensorEventListener
-    private double ax, ay, az = 0; // acceration from different axis
+    Random r = new Random();
 
-    public void setAcc(double ax, double ay, double az){
-        this.ax = ax;
-        this.ay = ay;
-        this.az = az;
+    public Ball(BallModel ballModel) {
+        this.x = ballModel.x;
+        this.y = ballModel.y;
+        this.speedX = ballModel.dx;
+        this.speedY = ballModel.dy;
     }
 
-    Random r = new Random();  // seed random number generator
-
-    // Constructor
     public Ball(int color) {
-        bounds = new RectF();
-        paint = new Paint();
         paint.setColor(color);
 
-        // random position and speed
         x = radius + r.nextInt(800);
         y = radius + r.nextInt(800);
         speedX = r.nextInt(10) - 5;
         speedY = r.nextInt(10) - 5;
     }
-
-    // Constructor
     public Ball(int color, float x, float y, float speedX, float speedY) {
-        bounds = new RectF();
-        paint = new Paint();
         paint.setColor(color);
 
-        // use parameter position and speed
         this.x = x;
         this.y = y;
         this.speedX = speedX;
@@ -59,15 +43,9 @@ public class Ball {
     }
 
     public void moveWithCollisionDetection(Box box) {
-        // Get new (x,y) position
         x += speedX;
         y += speedY;
 
-        // Add acceleration to speed
-        speedX += ax;
-        speedY += ay;
-
-        // Detect collision and react
         if (x + radius > box.xMax) {
             speedX = -speedX;
             x = box.xMax - radius;

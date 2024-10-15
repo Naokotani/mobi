@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 
 // Found tutorial to do put buttons over view here:
 // https://code.tutsplus.com/tutorials/android-sdk-creating-custom-views--mobile-14548
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity  BUTTON", "Color="+string_color+" X="+string_x+" Y="+string_y+" DX="+string_dx+" DY="+string_dy);
 
         // let the view do something
-        bbView.RussButtonPressed();
+        bbView.newBallButton();
 
     }
 }

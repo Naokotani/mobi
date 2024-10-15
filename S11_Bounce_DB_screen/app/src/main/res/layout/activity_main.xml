@@ -16,6 +16,7 @@
         custom:layout_constraintStart_toStartOf="parent"
         custom:layout_constraintTop_toTopOf="parent" />
 
+
     <Button
         android:id="@+id/button_russ"
         android:layout_width="wrap_content"
@@ -24,7 +25,7 @@
         android:text="Russ Button"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintEnd_toEndOf="parent"
-        custom:layout_constraintHorizontal_bias="0.491"
+        custom:layout_constraintHorizontal_bias="0.056"
         custom:layout_constraintStart_toStartOf="parent"
         custom:layout_constraintTop_toTopOf="parent"
         custom:layout_constraintVertical_bias="0.386" />
@@ -37,11 +38,10 @@
         android:text="Clear"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintEnd_toEndOf="parent"
-        custom:layout_constraintHorizontal_bias="0.529"
+        custom:layout_constraintHorizontal_bias="0.56"
         custom:layout_constraintStart_toStartOf="parent"
         custom:layout_constraintTop_toTopOf="parent"
-        custom:layout_constraintVertical_bias="0.903" />
-
+        custom:layout_constraintVertical_bias="0.386" />
 
     <SeekBar
         android:id="@+id/seekBar_Color"
