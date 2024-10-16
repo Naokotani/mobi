@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -20,9 +21,10 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
     private static final String yColumn = "y";
     private static final String dxColumn = "dx";
     private static final String dyColumn = "dy";
+    private static final String colorColumn = "color";
     private static final String SQL_CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "X FLOAT, Y FLOAT, DX FLOAT, DY FLOAT)";
+            "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY, " +
+                    "x FLOAT, y FLOAT, dx FLOAT, dy FLOAT, color INTEGER)";
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
@@ -34,12 +36,6 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TABLE);
-//        db.execSQL("INSERT INTO " + TABLE_NAME + " (X, Y, DX, DY)    VALUES" +
-//                "(3.0, 22.1, 0.5, 0.7)," +
-//                "(132.0, 22.3, 0.5, -1.7)," +
-//                "(134.0, 122.5, 0.5, 2.7)," +
-//                "(163.0, 122.7, 0.5, -6.7)," +
-//                "(283.0, 222.9, 0.5, 4.7)");
     }
 
     @Override
@@ -64,10 +60,11 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
     public long save(BallModel dataModel) {
         try(SQLiteDatabase db = this.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put(xColumn, dataModel.getModelX());
-            values.put(yColumn, dataModel.getModelY());
-            values.put(dxColumn, dataModel.getModelDX());
-            values.put(dyColumn, dataModel.getModelDY());
+            values.put(colorColumn, dataModel.color);
+            values.put(xColumn, dataModel.x);
+            values.put(yColumn, dataModel.y);
+            values.put(dxColumn, dataModel.dx);
+            values.put(dyColumn, dataModel.dy);
             return db.insert(TABLE_NAME,
                     null,
                     values);
@@ -81,24 +78,8 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
 
     @Override
     public int deleteById(Long id) {
-        return 0;
-    }
-
-    private void addDefaultRows() {
-        int doCount = this.count();
-        if (doCount > 20) {
-            Log.v("DBClass", "already 20 rows in DB");
-
-        } else {
-            BallModel a = new BallModel(1, 20.0f,20.0f,-4.0f,4.0f);
-            this.save(a);
-            a = new BallModel(2, 30f,30f,3f,-3f);
-            this.save(a);
-            a = new BallModel(3, 40f,40f,1f,4f);
-            this.save(a);
-            a = new BallModel(4, 60f,60f,-4f,1f);
-            this.save(a);
-
+        try(SQLiteDatabase db = this.getWritableDatabase()) {
+            return db.delete("balls", "id = ?", new String[]{id.toString()});
         }
     }
 
@@ -112,7 +93,7 @@ public class DBClass extends SQLiteOpenHelper implements DB_Interface {
 
             if (cursor.moveToFirst()) {
                 do {
-                    item = new BallModel(cursor.getInt(0), cursor.getFloat(1), cursor.getFloat(2), cursor.getFloat(3), cursor.getFloat(4) );
+                    item = new BallModel(cursor.getLong(0), cursor.getFloat(1), cursor.getFloat(2), cursor.getFloat(3), cursor.getFloat(4), cursor.getInt(5));
                     ballModels.add(item);
                 } while (cursor.moveToNext());
             }

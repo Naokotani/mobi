@@ -1,13 +1,23 @@
 package com.example.m03_bounce;
 
 public class BallModel {
-    private long id;
+    long id;
     float x;
     float y;
     float dx;
     float dy;
+    int color;
 
-    public BallModel(long id, Float x, Float y, Float dx, Float dy) {
+    public BallModel(Ball ball) {
+        this.color = ball.color;
+        this.x = ball.x;
+        this.y = ball.y;
+        this.dx = ball.speedX;
+        this.dy = ball.speedY;
+    }
+
+    public BallModel(long id, Float x, Float y, Float dx, Float dy, int color) {
+        this.color = color;
         this.setId(id);
         this.setModelPosVel(x, y, dx, dy);
     }
@@ -21,21 +31,5 @@ public class BallModel {
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-    }
-
-    public float getModelX() {
-        return this.x;
-    }
-
-    public float getModelY() {
-        return this.y;
-    }
-
-    public float getModelDX() {
-        return this.dx;
-    }
-
-    public float getModelDY() {
-        return this.dx;
     }
 }
