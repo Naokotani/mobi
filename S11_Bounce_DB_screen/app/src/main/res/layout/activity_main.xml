@@ -34,7 +34,7 @@
         android:id="@+id/button_clear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onRussButtonClick"
+        android:onClick="onCleanButtonClick"
         android:text="Clear"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintEnd_toEndOf="parent"

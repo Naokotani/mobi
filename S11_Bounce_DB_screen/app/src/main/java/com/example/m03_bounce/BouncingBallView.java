@@ -69,8 +69,6 @@ public class BouncingBallView extends View {
         return true;
     }
 
-    Random rand = new Random();
-
     public void newBallButton(int color, float x, float y, float dx, float dy) {
         int viewWidth = this.getMeasuredWidth();
         int viewHeight = this.getMeasuredHeight();

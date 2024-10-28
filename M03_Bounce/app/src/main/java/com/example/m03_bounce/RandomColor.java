@@ -4,7 +4,7 @@ import java.lang.Math;
 import android.graphics.Color;
 
 public class RandomColor {
-    private int color;
+    private final int color;
 
     public RandomColor() {
         int color = (int) Math.round(Math.random() * 8);
