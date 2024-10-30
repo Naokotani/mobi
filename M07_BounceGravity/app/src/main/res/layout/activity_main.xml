@@ -17,26 +17,13 @@
         custom:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_russ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onRussButtonClick"
-        android:text="@string/not_russ_button"
-        custom:layout_constraintBottom_toBottomOf="parent"
-        custom:layout_constraintEnd_toEndOf="parent"
-        custom:layout_constraintHorizontal_bias="0.1"
-        custom:layout_constraintStart_toStartOf="parent"
-        custom:layout_constraintTop_toTopOf="parent"
-        custom:layout_constraintVertical_bias="0.057" />
-
-    <Button
         android:id="@+id/clear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="16dp"
+        android:onClick="onCleanButtonPressed"
         android:text="@string/clear"
-        custom:layout_constraintStart_toEndOf="@+id/button_russ"
+        custom:layout_constraintEnd_toEndOf="parent"
         custom:layout_constraintTop_toTopOf="@+id/custView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

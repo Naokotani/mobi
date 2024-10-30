@@ -8,9 +8,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ public class BouncingBallView extends View implements SensorEventListener {
     double ax = 0;
     double ay = 0;
     double az = 0;
+    Random rand = new Random();
 
 
     public BouncingBallView(Context context, AttributeSet attrs) {
@@ -53,8 +56,8 @@ public class BouncingBallView extends View implements SensorEventListener {
             }
         }
 
-        balls.stream().filter(b -> goal.score(b)).forEach(b-> newLevel());
-        Log.i("balls", Integer.toString(balls.size()));
+        Optional<Ball> g = balls.stream().filter(b -> goal.score(b)).findAny();
+        g.ifPresent(b -> newLevel(level));
 
         balls = balls.stream()
                 .filter(b -> b.getMaxY() < this.getMeasuredHeight())
@@ -68,13 +71,39 @@ public class BouncingBallView extends View implements SensorEventListener {
         this.invalidate();
     }
 
-    private void newLevel() {
-        level += 1;
-        rectangles.clear();
+    private void newLevel(int prevLevel) {
+        this.level = prevLevel + 1;
+        this.balls.clear();
+        this.rectangles.clear();
 
         for(int i =0; i < level; i++) {
-            rectangles.add(new Rectangle(Color.CYAN));
+            this.rectangles.add(new Rectangle(Color.CYAN));
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        addBall();
+        return super.performClick();
+    }
+
+    private void addBall() {
+        int viewWidth = this.getMeasuredWidth();
+        int viewHeight = this.getMeasuredHeight();
+        int x = rand.nextInt(viewWidth);
+        int y = rand.nextInt(viewHeight/3);
+        int dx = rand.nextInt(10) - 5;
+        int dy = rand.nextInt(6) - 3;
+        balls.add(new Ball(Color.RED, x, y, dx, dy));
     }
 
     @Override
@@ -83,17 +112,12 @@ public class BouncingBallView extends View implements SensorEventListener {
         goal.setLocation(w, h);
     }
 
-    Random rand = new Random();
-    public void NotRussButtonPressed() {
-        int viewWidth = this.getMeasuredWidth();
-        int viewHeight = this.getMeasuredHeight();
-        int x = rand.nextInt(viewWidth);
-        int y = rand.nextInt(viewHeight/3);
-        int dx = rand.nextInt(10) - 5;
-        int dy = rand.nextInt(6) - 3;
-
-        balls.add(new Ball(Color.RED, x, y, dx, dy));
+    public void onClearButtonPressed(){
+        balls.clear();
+        rectangles.clear();
+        newLevel(0);
     }
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {

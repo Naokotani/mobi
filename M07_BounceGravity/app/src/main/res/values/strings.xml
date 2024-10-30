@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">M03_Bounce</string>
-    <string name="clear">Clear</string>
-    <string name="not_russ_button">Not Russ Button</string>
+    <string name="clear">Restart</string>
 </resources>

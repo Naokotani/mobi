@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Ball {
     double radius = 50;
@@ -91,40 +90,35 @@ public class Ball {
         directions.add(new Direction("up", magnitude(y - r.getMaxY())));
         directions.add(new Direction("down", magnitude(y - r.getMinY())));
 
-        List<Direction> multiDirection = directions.stream()
-                .filter(d -> d.distance < 5)
-                .collect(Collectors.toList());
-
         Direction smallest  = directions.stream()
                 .min(Comparator.comparing(Direction::getDistance)).orElse(null);
-
 
         switch(Objects.requireNonNull(smallest).direction) {
             case "left":
                 x = r.getMinX() - 60;
-                speedX += 10;
-                bounceX(r);
+                speedX += 5;
+                bounceX();
                 break;
             case "right":
                 x = r.getMaxX() + 60;
-                speedX -= 10;
-                bounceX(r);
+                speedX -= 5;
+                bounceX();
                 break;
             case "up":
                 y = r.getMaxY() + radius + 1;
-                bounceY(r);
+                bounceY();
                 break;
             case "down":
                 y = r.getMinY() - radius - 1;
-                bounceY(r);
+                bounceY();
         }
     }
 
-    private void bounceY(Rectangle r) {
+    private void bounceY() {
         speedY = -speedY;
     }
 
-    private void bounceX(Rectangle r) {
+    private void bounceX() {
         speedX = -speedX;
     }
 

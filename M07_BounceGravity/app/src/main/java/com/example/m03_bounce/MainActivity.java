@@ -68,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         Log.v("SENSORS", "onPause ACCELLEROMETER" );
     }
 
-
-    public void onRussButtonClick(View v) {
-        Log.d("MainActivity  BUTTON", "User tapped the  button ... MAIN");
-        bouncingBallView.NotRussButtonPressed();
+    public void onCleanButtonPressed(View v)  {
+        bouncingBallView.onClearButtonPressed();
     }
 }

@@ -7,7 +7,7 @@ import android.graphics.RectF;
 import java.util.Random;
 
 public class Rectangle {
-    private final double height = 50;
+    private final double height = 20;
     private final double width = 150;
     private double x;
     private double maxX;
@@ -45,7 +45,7 @@ public class Rectangle {
     public void setRandomPos(Canvas canvas) {
         posSet = true;
         x = r.nextInt(canvas.getWidth() - (int) width);
-        y = (double) canvas.getHeight() /2 + r.nextInt((canvas.getHeight() - 750)/2);
+        y = (double) canvas.getHeight() /2 + r.nextInt((canvas.getHeight() - canvas.getHeight()/4)/2);
         setMaxMin();
     }
 
