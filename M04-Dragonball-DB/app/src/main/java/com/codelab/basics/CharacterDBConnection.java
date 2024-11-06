@@ -3,15 +3,22 @@ package com.codelab.basics;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+
 import androidx.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +33,9 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
     private static final String CHARACTER_TABLE = "characters";
     private static final String SQL_CREATE_CHARACTER_TABLE =
             "CREATE TABLE IF NOT EXISTS " + CHARACTER_TABLE +
-                    " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256), gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER, defense INTEGER, ki INTEGER, access_count INTEGER)";
+                    " (id INTEGER PRIMARY KEY, name VARCHAR(256), race VARCHAR(256)," +
+                    " gender VARCHAR(256), bio TEXT, health INTEGER, attack INTEGER," +
+                    " defense INTEGER, url TEXT, ki INTEGER, access_count INTEGER)";
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final String SQL_DELETE_CHARACTER_TABLE =
@@ -38,12 +47,22 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         json = getJSONString(context);
     }
 
+
     public static synchronized CharacterDBConnection getInstance(Context context) {
         if(instance == null) {
             instance = new CharacterDBConnection(context);
             instance.buildDB();
         }
         return instance;
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri, Context context) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                context.getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 
     @Override
@@ -187,6 +206,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                     Integer.parseInt(character.getString("health").replaceAll(",","")),
                     Integer.parseInt(character.getString("attack").replaceAll(",","")),
                     Integer.parseInt(character.getString("defense").replaceAll(",","")),
+                    character.getString("url"),
                     Integer.parseInt(character.getString("kiRestoreSpeed").replaceAll(",",""))
             );
         } catch (JSONException e) {
@@ -241,6 +261,7 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
         values.put("health", character.health);
         values.put("attack", character.attack);
         values.put("defense", character.defense);
+        values.put("url", character.url);
         values.put("ki", character.kiRestoreSpeed);
         values.put("access_count", 0);
         db.insert(CHARACTER_TABLE, null, values);
@@ -269,7 +290,8 @@ public class CharacterDBConnection extends SQLiteOpenHelper implements Repositor
                 cursor.getInt(5),
                 cursor.getInt(6),
                 cursor.getInt(7),
-                cursor.getInt(8)
+                cursor.getString(8),
+                cursor.getInt(9)
         );
     }
 }

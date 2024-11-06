@@ -21,6 +21,8 @@
 
 package com.codelab.basics
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -51,6 +53,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -198,6 +201,9 @@ private fun CardContent(
 ) {
     val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(LocalContext.current)
     var expanded by remember { mutableStateOf(false) }
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(name.url))
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier
             .padding(12.dp)
@@ -236,6 +242,17 @@ private fun CardContent(
                 Text("Attack: " + name.attack.toString())
                 Text("Defense: " + name.defense.toString())
                 Text("Ki Restore Speed: " + name.kiRestoreSpeed.toString())
+                TextButton(
+                    onClick = {
+                        val intentImage= Intent(Intent.ACTION_GET_CONTENT)
+                        intentImage.setType("image/*");
+                        context.startActivity(Intent.createChooser(intentImage, "Do thing thing"))
+                    }
+                ) { Text("Character Image", color = DragonBallColors().VEGETA_BLUE) }
+                TextButton(
+                    onClick = {
+                    context.startActivity(intent)
+                }) { Text("Character Wiki", color = DragonBallColors().VEGETA_BLUE) }
             }
         }
         IconButton(onClick = {
