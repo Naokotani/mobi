@@ -21,25 +21,34 @@
 
 package com.codelab.basics
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ExpandLess
@@ -63,17 +72,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.zIndex
+import com.android.volley.toolbox.ImageRequest
 import com.codelab.basics.ui.theme.BasicsCodelabTheme
 import com.codelab.basics.ui.theme.Blue
 import com.codelab.basics.ui.theme.DragonBallColors
 import com.codelab.basics.ui.theme.Typography
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -201,8 +218,44 @@ private fun CardContent(
 ) {
     val characterDB: Repository<Character> =  CharacterDBConnection.getInstance(LocalContext.current)
     var expanded by remember { mutableStateOf(false) }
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(name.url))
     val context = LocalContext.current
+
+    fun saveImageToInternalStorage(context: Context, uri: Uri) {
+        try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            inputStream?.let { input ->
+                val outputDir = context.filesDir // Use internal storage
+                val outputFile = File(outputDir, name.name + ".png") // Name of the file
+                val outputStream = FileOutputStream(outputFile)
+                input.copyTo(outputStream)
+                input.close()
+                outputStream.close()
+                Log.i("image", "Image saved to internal storage: ${outputFile.absolutePath}")
+                Toast.makeText(context, "Image saved to internal storage: ${outputFile.absolutePath}", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Error saving image: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(), // Open a document
+        onResult = { uri: Uri? ->
+            if (uri != null) {
+                saveImageToInternalStorage(context, uri)
+                Log.i("image", uri.toString())
+                Toast.makeText(
+                    context,
+                    "Image selected: $uri",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    )
 
     Row(
         modifier = Modifier
@@ -244,14 +297,20 @@ private fun CardContent(
                 Text("Ki Restore Speed: " + name.kiRestoreSpeed.toString())
                 TextButton(
                     onClick = {
-                        val intentImage= Intent(Intent.ACTION_GET_CONTENT)
-                        intentImage.setType("image/*");
-                        context.startActivity(Intent.createChooser(intentImage, "Do thing thing"))
+                        val imageIntent = Intent(Intent.ACTION_PICK)
+                        imageIntent.type = "image/*"
+                        imageIntent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+                        context.startActivity(imageIntent)
+                    }) { Text("See Picture", color = DragonBallColors().VEGETA_BLUE) }
+                TextButton(
+                    onClick = {
+                        imagePickerLauncher.launch(arrayOf("image/*"))
                     }
                 ) { Text("Character Image", color = DragonBallColors().VEGETA_BLUE) }
                 TextButton(
                     onClick = {
-                    context.startActivity(intent)
+                        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(name.url))
+                        context.startActivity(webIntent)
                 }) { Text("Character Wiki", color = DragonBallColors().VEGETA_BLUE) }
             }
         }
@@ -344,6 +403,41 @@ private fun ShowPageDetails(
                     scrollToTop()
                 })
             { Text(text = "Prev") }
+        }
+    }
+}
+
+@Composable
+fun PopupBox(popupWidth: Float, popupHeight:Float, showPopup: Boolean, onClickOutside: () -> Unit, content: @Composable() () -> Unit) {
+    if (showPopup) {
+        // full screen background
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DragonBallColors().FRIEZA_PURPLE)
+                .zIndex(10F),
+            contentAlignment = Alignment.Center
+        ) {
+            // popup
+            Popup(
+                alignment = Alignment.Center,
+                properties = PopupProperties(
+                    excludeFromSystemGesture = true,
+                ),
+                // to dismiss on click outside
+                onDismissRequest = { onClickOutside() }
+            ) {
+                Box(
+                    Modifier
+                        .width(popupWidth.dp)
+                        .height(popupHeight.dp)
+                        .background(DragonBallColors().KAMI_WHITE)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    content()
+                }
+            }
         }
     }
 }

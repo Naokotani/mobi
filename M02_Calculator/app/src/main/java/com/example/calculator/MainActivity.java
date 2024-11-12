@@ -1,3 +1,21 @@
+/*
+ * Copyright 2024
+
+ The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.calculator;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,33 +25,37 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Main activity for the calculator view and operations
+ */
 public class MainActivity extends AppCompatActivity {
+    /**
+     * Updates the {@link Calculations} list
+     * @param input User input.
+     * @param calculations The current state of the calculations list
+     * @param total Total of the current running total.
+     * @param operator The operator to apply for the most recent operation.
+     * @return New updated calculations list
+     * @throws InvalidInputException If unable to parse the input.
+     */
     private Calculations calculate(Input input, Calculations calculations,
-                                   double total, char operator) {
-        Optional<Operation> parse = parseInput(input, total, operator);
-        parse.ifPresent(calculations::add);
-        parse.ifPresent(p -> input.setInput(calculations.resultString()));
-        return calculations;
-    }
+                                   double total, char operator) throws InvalidInputException {
 
-    private Optional<Operation> parseInput(Input input, double total, char operator) {
-        try {
-            return  new Parse().operator(input.getInput(), total, operator);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Parse.operator(input.getInput(), total, operator).map(res -> {
+            calculations.add(res);
+            input.setInput(calculations.resultString());
+            return calculations;
+        }).orElseThrow(() -> new InvalidInputException(
+                input.getInput()));
     }
 
 @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Action when "Add" button is pressed
         ImageButton add = findViewById(R.id.plus);
         ImageButton subtract = findViewById(R.id.minus);
         ImageButton divide = findViewById(R.id.divide);
@@ -58,21 +80,29 @@ public class MainActivity extends AppCompatActivity {
         AtomicBoolean result = new AtomicBoolean(false);
         AtomicReference<Character> operator = new AtomicReference<>('s');
         AtomicReference<Double> total = new AtomicReference<>((double) 0);
-
         Input input = new Input(findViewById(R.id.input),
-                findViewById(R.id.history));
+            findViewById(R.id.history));
 
-        add.setOnClickListener(v -> {
-            calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+    // TODO: Find a way to make these listener functions shorter.
+    add.setOnClickListener(v -> {
+            try{
+                calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            } catch(InvalidInputException e) {
+                input.setInput(e.getMessage());
+            }
             input.setInput(calculations.get().resultString());
-            total.set(calculations.get().result());
             input.setHistory(calculations.get().getHistoryString());
+            total.set(calculations.get().result());
             result.set(true);
             operator.set('+');
         });
 
         subtract.setOnClickListener(v -> {
-            calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            try{
+                calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            } catch(InvalidInputException e) {
+                input.setInput(e.getMessage());
+            }
             input.setInput(calculations.get().resultString());
             total.set(calculations.get().result());
             input.setHistory(calculations.get().getHistoryString());
@@ -81,7 +111,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         multiply.setOnClickListener(v -> {
-            calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            try{
+                calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            } catch(InvalidInputException e) {
+                input.setInput(e.getMessage());
+            }
             input.setInput(calculations.get().resultString());
             total.set(calculations.get().result());
             input.setHistory(calculations.get().getHistoryString());
@@ -90,7 +124,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         divide.setOnClickListener(v -> {
-            calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            try{
+                calculations.set(calculate(input, calculations.get(), total.get(), operator.get()));
+            } catch(InvalidInputException e) {
+                input.setInput(e.getMessage());
+            }
             input.setInput(calculations.get().resultString());
             total.set(calculations.get().result());
             input.setHistory(calculations.get().getHistoryString());
@@ -217,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 }
+
